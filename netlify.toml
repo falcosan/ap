@@ -2,3 +2,9 @@
 from = "/*"
 to = "/index.html"
 status = 200
+
+publish = "dist"
+
+[build.environment]
+RUST_VERSION = "1.83.0"
+CARGO_TERM_COLOR = "always"
