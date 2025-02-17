@@ -560,14 +560,6 @@
   .table {
     display: table;
   }
-  .size-10 {
-    width: calc(var(--spacing) * 10);
-    height: calc(var(--spacing) * 10);
-  }
-  .size-90 {
-    width: calc(var(--spacing) * 90);
-    height: calc(var(--spacing) * 90);
-  }
   .size-190 {
     width: calc(var(--spacing) * 190);
     height: calc(var(--spacing) * 190);
@@ -614,9 +606,6 @@
   .gap-10 {
     gap: calc(var(--spacing) * 10);
   }
-  .gap-20 {
-    gap: calc(var(--spacing) * 20);
-  }
   .rounded {
     border-radius: 0.25rem;
   }
@@ -624,29 +613,11 @@
     border-style: var(--tw-border-style);
     border-width: 1px;
   }
-  .bg-gray-200 {
-    background-color: var(--color-gray-200);
-  }
-  .bg-gray-300 {
-    background-color: var(--color-gray-300);
-  }
-  .bg-gray-400 {
-    background-color: var(--color-gray-400);
-  }
-  .bg-gray-900 {
-    background-color: var(--color-gray-900);
-  }
   .bg-neutral-200 {
     background-color: var(--color-neutral-200);
   }
   .bg-neutral-300 {
     background-color: var(--color-neutral-300);
-  }
-  .bg-slate-200 {
-    background-color: var(--color-slate-200);
-  }
-  .object-contain {
-    object-fit: contain;
   }
   .px-4 {
     padding-inline: calc(var(--spacing) * 4);
