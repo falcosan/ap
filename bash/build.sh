@@ -1,3 +1,3 @@
 #!/bin/bash
 
-dx build --release
+dx build --release --platform web
