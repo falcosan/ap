@@ -1,4 +1,4 @@
 import "./assets/index.css";
-import init from "../rust/pkg";
+import init from "../src/pkg";
 
 init().then(({ app }) => app());
