@@ -2,13 +2,21 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 WASM_DIR="${SCRIPT_DIR}/rust"
-PKG_DIR="${WASM_DIR}/pkg"
 
-cd "${WASM_DIR}"
-cargo watch -i .gitignore -i "pkg/*" -s "wasm-pack build --out-name index --target web"
+run_cargo_watch() {
+    cd "${WASM_DIR}" &>/dev/null
+    cargo watch -q -i .gitignore -i "pkg/*" -s "wasm-pack build --out-name index --target web --quiet" &>/dev/null &
+}
 
+run_rsbuild() {
+    cd "${SCRIPT_DIR}" &>/dev/null
+    rsbuild dev &>/dev/null
+}
 
-cd "${SCRIPT_DIR}"
-rsbuild rsbuild dev --open
+echo "Development mode"
+run_cargo_watch
+run_rsbuild
+
+wait
