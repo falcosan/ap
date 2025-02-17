@@ -1,3 +1,3 @@
 #!/bin/bash
 
-dx build --release --platform web
+dx bundle --platform web --release
