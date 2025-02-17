@@ -8,7 +8,7 @@ license = "MIT"
 repository = "https://github.com/falcosan/ap"
 
 [lib]
-path = "lib.rs"
+path = "index.rs"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]

@@ -6,7 +6,7 @@ pub fn app() {
     if let Some(window) = window() {
         if let Some(document) = window.document() {
             if let Some(element) = document.get_element_by_id("root") {
-                element.set_inner_html("Hello from Rust!");
+                element.set_inner_html("Ciao");
             }
         }
     }

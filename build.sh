@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-WASM_DIR="${SCRIPT_DIR}/wasm"
+WASM_DIR="${SCRIPT_DIR}/rust"
 PKG_DIR="${WASM_DIR}/pkg"
 LIB_DIR="${PKG_DIR}/lib"
 

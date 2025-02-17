@@ -6,12 +6,11 @@
   "scripts": {
     "build": "rsbuild build",
     "build:wasm": "./build.sh",
-    "dev": "rsbuild dev --open",
-    "preview": "rsbuild preview"
+    "preview": "rsbuild preview",
+    "dev": "npm run build:wasm && rsbuild dev --open"
   },
   "devDependencies": {
     "@rsbuild/core": "^1.2.4",
-    "rsbuild-plugin-wasmpack": "^0.0.3",
     "typescript": "^5.7.3"
   }
 }
