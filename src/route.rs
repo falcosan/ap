@@ -1,4 +1,5 @@
-use crate::{components::navbar::Navbar, pages::home::Home};
+use crate::components::Navbar;
+use crate::pages::Home;
 use dioxus::prelude::*;
 
 #[derive(Debug, Clone, Routable, PartialEq)]

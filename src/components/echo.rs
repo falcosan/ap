@@ -6,7 +6,7 @@ async fn echo_server(input: String) -> Result<String, ServerFnError> {
 }
 
 #[component]
-pub fn Echo() -> Element {
+pub(crate) fn Echo() -> Element {
     let mut response = use_signal(|| String::new());
 
     rsx! {

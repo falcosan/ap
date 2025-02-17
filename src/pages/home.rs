@@ -1,4 +1,4 @@
-use crate::components::echo::Echo;
+use crate::components::Echo;
 use dioxus::prelude::*;
 
 #[component]

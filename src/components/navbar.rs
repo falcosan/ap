@@ -2,7 +2,7 @@ use crate::route::Route;
 use dioxus::prelude::*;
 
 #[component]
-pub fn Navbar() -> Element {
+pub(crate) fn Navbar() -> Element {
     rsx! {
         div {
             id: "navbar",
