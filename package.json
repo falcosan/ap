@@ -1,10 +1,17 @@
 {
+  "name": "ap",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "./bash/dev.sh",
-    "build": "./bash/build.sh"
+    "build": "rsbuild build",
+    "build:wasm": "./build.sh",
+    "dev": "rsbuild dev --open",
+    "preview": "rsbuild preview"
   },
-  "dependencies": {
-    "@tailwindcss/cli": "^4.0.6",
-    "tailwindcss": "^4.0.6"
+  "devDependencies": {
+    "@rsbuild/core": "^1.2.4",
+    "rsbuild-plugin-wasmpack": "^0.0.3",
+    "typescript": "^5.7.3"
   }
 }
