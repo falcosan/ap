@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "dx serve"
+    "dev": "dx serve",
+    "css": "npx tailwindcss -i ./assets/main.css -o ./assets/tailwind.css --watch"
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.0.6",

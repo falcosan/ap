@@ -10,8 +10,8 @@ dioxus = { version = "*", features = ["router", "fullstack"] }
 [features]
 default = ["web"]
 web = ["dioxus/web"]
-desktop = ["dioxus/desktop"]
 mobile = ["dioxus/mobile"]
+desktop = ["dioxus/desktop"]
 
 [profile]
 
