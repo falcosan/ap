@@ -4,10 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "rsbuild build",
-    "build:wasm": "./build.sh",
-    "preview": "rsbuild preview",
-    "dev": "npm run build:wasm && rsbuild dev --open"
+    "dev": "./dev.sh",
+    "build": "./build.sh",
+    "preview": "rsbuild preview"
   },
   "devDependencies": {
     "@rsbuild/core": "^1.2.4",
