@@ -7,3 +7,4 @@ macro_rules! export_component {
 }
 
 export_component!(navbar);
+export_component!(dogs);
