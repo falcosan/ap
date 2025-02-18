@@ -1,7 +1,6 @@
 use crate::environment::ENV;
 use minijinja::context;
 use serde::Serialize;
-use std::sync::atomic::{AtomicI32, Ordering};
 
 pub fn fallback() -> String {
     #[derive(Serialize)]
@@ -9,13 +8,7 @@ pub fn fallback() -> String {
         content: String,
     }
 
-    let mut env = ENV.lock().unwrap();
-
-    static COUNTER: AtomicI32 = AtomicI32::new(0);
-
-    env.add_function("increment", |val: i32| {
-        COUNTER.fetch_add(val, Ordering::SeqCst)
-    });
+    let env = ENV.lock().unwrap();
 
     let template = env.get_template("fallback.html").unwrap();
 
