@@ -77,6 +77,7 @@ impl EnvWrapper {
         self.env.add_function(name, func);
     }
 }
+
 pub static ENV: LazyLock<Mutex<EnvWrapper>> = LazyLock::new(|| {
     let mut wrapper = EnvWrapper::new();
     wrapper
