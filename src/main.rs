@@ -3,19 +3,36 @@ mod environment;
 use environment::ENV;
 use minijinja::context;
 use serde::Serialize;
+use std::sync::atomic::{AtomicI32, Ordering};
 use wasm_bindgen::prelude::*;
 use web_sys::window;
 
 fn home() -> String {
     #[derive(Serialize)]
-    struct Page {
+    struct Props {
         content: String,
+        counter: String,
     }
 
-    let template = ENV.get_template("home.html").unwrap();
-    let page = Page {
+    static COUNTER: AtomicI32 = AtomicI32::new(0);
+
+    let mut env = ENV.lock().unwrap();
+
+    env.add_function("increment", |val: i32| {
+        COUNTER.fetch_add(val, Ordering::SeqCst);
+    });
+
+    env.add_function("decrement", |val: i32| {
+        COUNTER.fetch_sub(val, Ordering::SeqCst);
+    });
+
+    let template = env.get_template("home.html").unwrap();
+
+    let page = Props {
         content: "Lorem Ipsum".into(),
+        counter: COUNTER.load(Ordering::SeqCst).to_string(),
     };
+
     template.render(context!(page)).unwrap()
 }
 

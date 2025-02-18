@@ -1,1 +1,10 @@
-{% extends "layout.html" %} {% block main %} {{ page.content }} {% endblock %}
+{% extends "layout.html" %}
+{% block main %}
+{{ page.content }}
+
+<div class="counter">
+  <h2>Counter: {{ page.counter }}</h2>
+  <button onclick="{{increment(1)}}">+</button>
+  <button onclick="{{decrement(1)}}">-</button>
+</div>
+{% endblock %}
