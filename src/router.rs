@@ -1,17 +1,26 @@
-use web_sys::{window, Location};
+use crate::pages::{about, blog, fallback, home};
+use axum::{http::StatusCode, response::Html, routing::get, Router};
 
-pub fn get_window_location() -> Option<Location> {
-    window().map(|w| w.location())
+async fn home_handler() -> Html<String> {
+    Html(home())
 }
 
-pub fn render_page<F>(page: F)
-where
-    F: FnOnce() -> String,
-{
-    if let Some(root) = window()
-        .and_then(|w| w.document())
-        .and_then(|doc| doc.get_element_by_id("root"))
-    {
-        root.set_inner_html(&page());
-    }
+async fn about_handler() -> Html<String> {
+    Html(about())
+}
+
+async fn blog_handler() -> Html<String> {
+    Html(blog())
+}
+
+async fn fallback_handler() -> (StatusCode, Html<String>) {
+    (StatusCode::NOT_FOUND, Html(fallback()))
+}
+
+pub fn router() -> Router {
+    Router::new()
+        .route("/", get(home_handler))
+        .route("/about", get(about_handler))
+        .route("/blog", get(blog_handler))
+        .fallback(fallback_handler)
 }

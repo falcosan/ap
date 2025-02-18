@@ -7,23 +7,14 @@ authors = ["Daniele Falchetti <danielefalche@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/falcosan/ap"
 
-[lib]
-path = "app.rs"
-crate-type = ["cdylib", "rlib"]
-
 [dependencies]
+axum = "0.8"
 minijinja = "2"
 wasm-bindgen = "0.2"
 serde_json = "1.0.138"
 wasm-bindgen-futures = "0.4"
+tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0.217", features = ["derive"] }
-web-sys = { version = "0.3", features = [
-  "Window",
-  "Document",
-  "Element",
-  "Location",
-  "console",
-] }
 
 [profile.release]
 lto = true
