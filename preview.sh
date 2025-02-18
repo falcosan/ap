@@ -10,3 +10,4 @@ wasm-pack build --out-name index --target web
 
 cd "${SCRIPT_DIR}"
 rsbuild build
+rsbuild preview
