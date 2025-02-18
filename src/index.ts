@@ -1,2 +1,2 @@
-import init from "./pkg";
+import init from "./wasm";
 init().then(({ app }) => app());
