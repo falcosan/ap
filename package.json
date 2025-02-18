@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "./dev.sh",
-    "preview": "./preview.sh",
-    "build": "rsbuild build"
+    "build": "./build.sh"
   },
   "devDependencies": {
     "@rsbuild/core": "^1.2.4",
