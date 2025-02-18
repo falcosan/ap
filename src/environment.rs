@@ -1,7 +1,7 @@
 use minijinja::Environment;
 use std::sync::LazyLock;
 
-pub(crate) static TEMPLATES: LazyLock<Environment<'static>> = LazyLock::new(|| {
+pub(crate) static ENV: LazyLock<Environment<'static>> = LazyLock::new(|| {
     let mut env = Environment::new();
     env.add_template("layout.html", include_str!("layout/default.jinja"))
         .unwrap();

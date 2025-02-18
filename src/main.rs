@@ -1,8 +1,8 @@
-mod templates;
+mod environment;
 
+use environment::ENV;
 use minijinja::context;
 use serde::Serialize;
-use templates::TEMPLATES;
 use wasm_bindgen::prelude::*;
 use web_sys::window;
 
@@ -12,7 +12,7 @@ fn home() -> String {
         content: String,
     }
 
-    let template = TEMPLATES.get_template("home.html").unwrap();
+    let template = ENV.get_template("home.html").unwrap();
     let page = Page {
         content: "Lorem Ipsum".into(),
     };
