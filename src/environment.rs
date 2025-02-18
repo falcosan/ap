@@ -47,6 +47,7 @@ impl EnvWrapper {
                 ("home.html", include_str!("pages/home/index.jinja")),
                 ("blog.html", include_str!("pages/blog/index.jinja")),
                 ("about.html", include_str!("pages/about/index.jinja")),
+                ("fallback.html", include_str!("pages/fallback/index.jinja")),
             ]),
         }
     }
