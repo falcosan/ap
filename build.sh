@@ -7,8 +7,8 @@ SRC_DIR="${SCRIPT_DIR}/src"
 WASM_DIR="${SRC_DIR}/wasm"
 
 if ! command -v wasm-pack >/dev/null 2>&1; then
-  echo "Error: wasm-pack is not installed. Please install it before running this script." >&2
-  exit 1
+  rsbuild build
+  exit 0
 fi
 
 echo "Building WebAssembly module..."
@@ -20,11 +20,5 @@ rm -f "${WASM_DIR}/.gitignore"
 rm -f "${WASM_DIR}/package.json"
 
 cd "${SCRIPT_DIR}"
-
-echo "Building the Rust project..."
-if ! command -v rsbuild >/dev/null 2>&1; then
-  echo "Error: rsbuild is not installed. Please install it before running this script." >&2
-  exit 1
-fi
 
 rsbuild build
