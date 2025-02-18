@@ -1,20 +1,31 @@
 use minijinja::{context, Environment};
+use serde::Serialize;
 use wasm_bindgen::prelude::*;
 use web_sys::window;
+
+#[derive(Serialize)]
+struct Page {
+    content: String,
+}
 
 #[wasm_bindgen]
 pub fn app() {
     let mut env = Environment::new();
+    env.add_template("layout.html", include_str!("layout/default.html"))
+        .unwrap();
+    env.add_template("index.html", include_str!("pages/index.html"))
+        .unwrap();
 
-    env.add_template("hello.txt", "Hello {{ name }}!").unwrap();
+    let template = env.get_template("index.html").unwrap();
+    let page = Page {
+        content: "Lorum Ipsum".into(),
+    };
+    let render = template.render(context!(page)).unwrap();
 
-    let template = env.get_template("hello.txt").unwrap();
-    let ea = template.render(context!(name => "DAN")).unwrap();
-    if let Some(window) = window() {
-        if let Some(document) = window.document() {
-            if let Some(element) = document.get_element_by_id("root") {
-                element.set_inner_html(&ea);
-            }
-        }
+    if let Some(root) = window()
+        .and_then(|w| w.document())
+        .and_then(|doc| doc.get_element_by_id("root"))
+    {
+        root.set_inner_html(&render);
     }
 }
