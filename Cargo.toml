@@ -24,6 +24,7 @@ web-sys = { version = "0.3", features = [
   "Location",
   "console",
 ] }
+axum = "0.8.1"
 
 [profile.release]
 lto = true
