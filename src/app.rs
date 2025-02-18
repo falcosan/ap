@@ -13,10 +13,10 @@ pub fn app() {
     let mut env = Environment::new();
     env.add_template("layout.html", include_str!("layout/default.html"))
         .unwrap();
-    env.add_template("index.html", include_str!("pages/index.html"))
+    env.add_template("home.html", include_str!("pages/home.html"))
         .unwrap();
 
-    let template = env.get_template("index.html").unwrap();
+    let template = env.get_template("home.html").unwrap();
     let page = Page {
         content: "Lorem Ipsum".into(),
     };
