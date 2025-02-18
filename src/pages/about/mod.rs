@@ -13,7 +13,7 @@ pub fn about() -> String {
     let template = env.get_template("about.html").unwrap();
 
     let page = Props {
-        content: "about".into(),
+        content: "About".into(),
     };
 
     template.render(context!(page)).unwrap()
