@@ -18,7 +18,7 @@ pub fn app() {
 
     let template = env.get_template("index.html").unwrap();
     let page = Page {
-        content: "Lorum Ipsum".into(),
+        content: "Lorem Ipsum".into(),
     };
     let render = template.render(context!(page)).unwrap();
 
