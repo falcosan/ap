@@ -1,0 +1,24 @@
+{
+  "name": "ap",
+  "type": "module",
+  "collaborators": [
+    "Daniele Falchetti <danielefalche@gmail.com>"
+  ],
+  "description": "ap",
+  "version": "1.4.7",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/falcosan/ap"
+  },
+  "files": [
+    "index_bg.wasm",
+    "index.js",
+    "index.d.ts"
+  ],
+  "main": "index.js",
+  "types": "index.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
