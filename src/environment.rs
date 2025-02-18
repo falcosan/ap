@@ -11,7 +11,7 @@ impl EnvWrapper {
         let mut env = Environment::new();
         env.add_template("layout.html", include_str!("layout/default.jinja"))
             .expect("Failed to add layout.html template");
-        env.add_template("home.html", include_str!("pages/home.jinja"))
+        env.add_template("home.html", include_str!("pages/home/index.jinja"))
             .expect("Failed to add home.html template");
         Self { env }
     }
