@@ -13,6 +13,10 @@ impl EnvWrapper {
             .expect("Failed to add layout.html template");
         env.add_template("home.html", include_str!("pages/home/index.jinja"))
             .expect("Failed to add home.html template");
+        env.add_template("about.html", include_str!("pages/about/index.jinja"))
+            .expect("Failed to add about.html template");
+        env.add_template("blog.html", include_str!("pages/blog/index.jinja"))
+            .expect("Failed to add blog.html template");
         Self { env }
     }
 
