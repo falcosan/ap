@@ -11,9 +11,9 @@ struct Page {
 #[wasm_bindgen]
 pub fn app() {
     let mut env = Environment::new();
-    env.add_template("layout.html", include_str!("layout/default.html"))
+    env.add_template("layout.html", include_str!("layout/default.jinja"))
         .unwrap();
-    env.add_template("home.html", include_str!("pages/home.html"))
+    env.add_template("home.html", include_str!("pages/home.jinja"))
         .unwrap();
 
     let template = env.get_template("home.html").unwrap();
