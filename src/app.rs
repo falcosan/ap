@@ -8,11 +8,12 @@ struct Page {
     content: String,
 }
 
-#[wasm_bindgen]
-pub fn app() {
-    let mut env = Environment::new();
+fn layout(env: &mut Environment) {
     env.add_template("layout.html", include_str!("layout/default.jinja"))
         .unwrap();
+}
+
+fn home(env: &mut Environment) -> String {
     env.add_template("home.html", include_str!("pages/home.jinja"))
         .unwrap();
 
@@ -20,12 +21,20 @@ pub fn app() {
     let page = Page {
         content: "Lorem Ipsum".into(),
     };
-    let render = template.render(context!(page)).unwrap();
+    template.render(context!(page)).unwrap()
+}
+
+#[wasm_bindgen]
+pub fn app() {
+    let mut env = Environment::new();
+
+    layout(&mut env);
+    let home = home(&mut env);
 
     if let Some(root) = window()
         .and_then(|w| w.document())
         .and_then(|doc| doc.get_element_by_id("root"))
     {
-        root.set_inner_html(&render);
+        root.set_inner_html(&home);
     }
 }
