@@ -1,4 +1,16 @@
 {% extends "layout.html" %}
 {% block main %}
 {{ page.content }}
+<button onclick="incrementCounter()">more</button>
+<pre id="counterDisplay">{{ page.counter }}</pre>
+
+<script>
+  async function incrementCounter() {
+    const response = await fetch('/increment-counter', {
+      method: 'POST'
+    });
+    const newCount = await response.text();
+    document.getElementById('counterDisplay').textContent = newCount;
+  }
+</script>
 {% endblock %}

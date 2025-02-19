@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use minijinja::value::{FunctionArgs, FunctionResult};
 use minijinja::{functions::Function, Environment, Error as MJError, Template};
 use std::collections::HashMap;
@@ -51,7 +53,7 @@ impl EnvWrapper {
             ]),
         }
     }
-    pub fn initialize(&mut self) -> Result<(), TemplateError> {
+    fn initialize(&mut self) -> Result<(), TemplateError> {
         for (name, content) in &self.templates {
             self.env
                 .add_template(name, content)

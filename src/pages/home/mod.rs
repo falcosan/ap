@@ -3,26 +3,21 @@ use minijinja::context;
 use serde::Serialize;
 use std::sync::atomic::{AtomicI32, Ordering};
 
+#[derive(Serialize)]
+struct PageContext {
+    content: String,
+    counter: AtomicI32,
+}
+
+static COUNTER: AtomicI32 = AtomicI32::new(0);
+
 pub fn home() -> String {
-    #[derive(Serialize)]
-    struct Props {
-        content: String,
-        counter: i32,
-    }
-
-    let mut env = ENV.lock().unwrap();
-    static COUNTER: AtomicI32 = AtomicI32::new(0);
-
-    env.add_function("increment", |val: i32| {
-        COUNTER.fetch_add(val, Ordering::SeqCst)
-    });
-
+    let env = ENV.lock().unwrap();
     let template = env.get_template("home.html").unwrap();
-
-    let page = Props {
+    let context = PageContext {
         content: "Home".into(),
-        counter: COUNTER.load(Ordering::SeqCst),
+        counter: COUNTER.load(Ordering::SeqCst).into(),
     };
 
-    template.render(context!(page)).unwrap()
+    template.render(context!(page => context)).unwrap()
 }
