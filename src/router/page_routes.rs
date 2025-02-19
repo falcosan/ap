@@ -1,21 +1,21 @@
 use crate::pages::{about, blog, home};
 use axum::{response::Html, routing::get, Router};
 
-fn home_handler(router: Router) -> Router {
-    router.route("/", get(Html(home())))
+async fn home_handler() -> Html<String> {
+    Html(home())
 }
 
-fn about_handler(router: Router) -> Router {
-    router.route("/about", get(Html(about())))
+async fn about_handler() -> Html<String> {
+    Html(about())
 }
 
-fn blog_handler(router: Router) -> Router {
-    router.route("/blog", get(Html(blog())))
+async fn blog_handler() -> Html<String> {
+    Html(blog())
 }
 
-pub(crate) fn page_routes(mut router: Router) -> Router {
-    router = home_handler(router);
-    router = about_handler(router);
-    router = blog_handler(router);
+pub(crate) fn page_routes(router: Router) -> Router {
     router
+        .route("/", get(home_handler))
+        .route("/about", get(about_handler))
+        .route("/blog", get(blog_handler))
 }

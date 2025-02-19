@@ -1,11 +1,8 @@
-use crate::pages::home::increment_counter;
+use crate::pages::home::{decrease_counter, increase_counter};
 use axum::{routing::post, Router};
 
-fn post_increment_counter(router: Router) -> Router {
-    router.route("/increment-counter", post(increment_counter))
-}
-
-pub(crate) fn api_routes(mut router: Router) -> Router {
-    router = post_increment_counter(router);
+pub(crate) fn api_routes(router: Router) -> Router {
     router
+        .route("/increase-counter", post(increase_counter))
+        .route("/decrease-counter", post(decrease_counter))
 }

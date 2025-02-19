@@ -1,16 +1,17 @@
 {% extends "layout.html" %}
 {% block main %}
 {{ page.content }}
-<button onclick="incrementCounter()">more</button>
-<pre id="counterDisplay">{{ page.counter }}</pre>
-
+<button onclick="incrementCounter()">+</button>
+<button onclick="decreaseCounter()">-</button>
+<pre id="counter">{{ page.counter }}</pre>
 <script>
-  async function incrementCounter() {
-    const response = await fetch('/increment-counter', {
-      method: 'POST'
-    });
-    const newCount = await response.text();
-    document.getElementById('counterDisplay').textContent = newCount;
+  const incrementCounter = async () => {
+    const response = await fetch('/increase-counter', { method: 'POST' });
+    document.getElementById('counter').textContent = await response.text();
+  }
+  const decreaseCounter = async () => {
+    const response = await fetch('/decrease-counter', { method: 'POST' });
+    document.getElementById('counter').textContent = await response.text();
   }
 </script>
 {% endblock %}
