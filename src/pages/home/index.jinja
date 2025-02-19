@@ -3,20 +3,14 @@
 Hello, My name is Daniele.
 <div class="flex flex-col mt-16">
   <div class="grid grid-flow-col gap-2 justify-center">
-    <button class="size-8" onclick="incrementCounter()">+</button>
-    <button class="size-8" onclick="decreaseCounter()">-</button>
+    <button class="size-8" onclick="sub()">-</button>
+    <button class="size-8" onclick="add()">+</button>
   </div>
   This is a counter. Try to click the buttons.
   <pre class="p-16 my-8 shadow-lg text-center text-5xl rounded" id="counter">{{ page.counter }}</pre>
 </div>
 <script>
-  const incrementCounter = async () => {
-    const response = await fetch('/increase-counter', { method: 'POST' });
-    document.getElementById('counter').textContent = await response.text();
-  }
-  const decreaseCounter = async () => {
-    const response = await fetch('/decrease-counter', { method: 'POST' });
-    document.getElementById('counter').textContent = await response.text();
-  }
+  const sub = () => fetch('/decrease-counter', { method: 'POST' }).then(e => e.text()).then(e => document.getElementById('counter').innerText = e);
+  const add = () => fetch('/increase-counter', { method: 'POST' }).then(e => e.text()).then(e => document.getElementById('counter').innerText = e);
 </script>
 {% endblock %}
