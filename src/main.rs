@@ -11,7 +11,7 @@ mod pages {
 
 #[tokio::main]
 async fn main() {
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:8080")
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:8888")
         .await
         .unwrap();
     println!("listening on {}", listener.local_addr().unwrap());
