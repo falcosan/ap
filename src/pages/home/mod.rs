@@ -7,6 +7,7 @@ pub fn home() -> String {
     #[derive(Serialize)]
     struct Props {
         content: String,
+        counter: i32,
     }
 
     let mut env = ENV.lock().unwrap();
@@ -20,6 +21,7 @@ pub fn home() -> String {
 
     let page = Props {
         content: "Home".into(),
+        counter: COUNTER.load(Ordering::SeqCst),
     };
 
     template.render(context!(page)).unwrap()
