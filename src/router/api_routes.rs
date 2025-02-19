@@ -1,7 +1,7 @@
 use axum::{response::Html, routing::post, Router};
 
 async fn increment_counter() -> Html<String> {
-    Html("Hello, World!".to_string())
+    Html("Hello, STENOOOOOO!".to_string())
 }
 
 pub(crate) fn api_routes(router: Router) -> Router {
