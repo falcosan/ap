@@ -5,7 +5,7 @@ use std::sync::atomic::{AtomicI32, Ordering};
 
 #[derive(Serialize)]
 struct PageContext {
-    content: String,
+    title: String,
     counter: String,
 }
 
@@ -30,7 +30,7 @@ pub fn home() -> String {
     let template = env.get_template("home.html").unwrap();
     let context = PageContext {
         counter: read_counter(),
-        content: "Home".into(),
+        title: "Home".into(),
     };
 
     template.render(context!(page => context)).unwrap()

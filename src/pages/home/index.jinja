@@ -1,9 +1,19 @@
 {% extends "layout.html" %}
 {% block main %}
-{{ page.content }}
-<button onclick="incrementCounter()">+</button>
-<button onclick="decreaseCounter()">-</button>
-<pre id="counter">{{ page.counter }}</pre>
+Hello, My name is Daniele.
+<div class="flex flex-col mt-16">
+  This is a counter.
+  <div class="grid grid-flow-col gap-2 justify-center">
+    <button class="size-8" onclick="incrementCounter()">+</button>
+    <button class="size-8" onclick="decreaseCounter()">-</button>
+  </div>
+  Try to click the buttons.
+  <pre class="p-16 my-8 shadow-lg text-center text-5xl rounded" id="counter">{{ page.counter }}</pre>
+  Now try to refresh the page.
+  {% if page.counter != "0" %}
+  <p class="text-center text-2xl">The value is stored directly on the Rust server. Awesome!</p>
+  {% endif %}
+</div>
 <script>
   const incrementCounter = async () => {
     const response = await fetch('/increase-counter', { method: 'POST' });
