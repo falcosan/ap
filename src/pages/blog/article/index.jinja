@@ -2,5 +2,5 @@
 {% block main %}
 <h1>{{ page.data.content.title }}</h1>
 <h2>{{ page.data.content.intro }}</h2>
-<p>{{ page.data.content.long_text|safe }}</p>
+<div class="markdown">{{ page.data.content.long_text|safe }}</div>
 {% endblock %}
