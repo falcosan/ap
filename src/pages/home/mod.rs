@@ -6,14 +6,14 @@ use std::env;
 
 #[derive(Serialize)]
 struct PageContext<T> {
-    content: T,
+    data: T,
 }
-pub fn get_data_home() -> Value {
+pub fn get_data(name: &str) -> Value {
     let st_token = env::var("ST_TOKEN").unwrap();
 
     let response = minreq::get(format!(
-        "https://api.storyblok.com/v2/cdn/stories/home?token={}",
-        st_token
+        "https://api.storyblok.com/v2/cdn/stories/{}?token={}",
+        name, st_token
     ))
     .send()
     .expect("Request failed");
@@ -32,7 +32,7 @@ pub fn home() -> String {
     let env = ENV.lock().unwrap();
     let template = env.get_template("home.html").unwrap();
     let context = PageContext {
-        content: get_data_home(),
+        data: get_data("home"),
     };
     template.render(context!(page => context)).unwrap()
 }
