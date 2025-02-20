@@ -1,6 +1,5 @@
-use crate::pages::home::get_data_home;
 use axum::{routing::get, Router};
 
 pub(crate) fn api_routes(router: Router) -> Router {
-    router.route("/get_data_home", get(get_data_home))
+    router.route("/get_data_home", get(()))
 }

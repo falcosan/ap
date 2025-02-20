@@ -2,12 +2,5 @@
 {% block main %}
 Hello, my name is Daniele.
 <div id="data" />
-<script>
-  fetch('/get_data_home')
-    .then(async res => {
-      const data = await res.json()
-      const story = data.story || data;
-      document.getElementById('data').textContent = story.name;
-    })
-</script>
+{{ page.content }}
 {% endblock %}
