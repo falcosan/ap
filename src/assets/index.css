@@ -1,54 +1,48 @@
+/* RESET */
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-html {
-  -moz-text-size-adjust: none;
-  -webkit-text-size-adjust: none;
-  text-size-adjust: none;
+* {
+  margin: 0;
 }
 
 body {
-  min-height: 100vh;
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
-body,
-h1,
-h2,
-h3,
-h4,
-p,
-figure,
-blockquote,
-dl,
-dd {
-  margin-block-end: 0;
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
 }
 
-
-ul[role='list'],
-ol[role='list'] {
-  list-style: none;
-}
-
-h1,
-h2,
-h3,
-h4,
-button,
 input,
-label {
-  line-height: 1.1;
+button,
+textarea,
+select {
+  font: inherit;
 }
 
+p,
 h1,
 h2,
 h3,
-h4 {
-  text-wrap: balance;
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+p {
+  text-wrap: pretty;
 }
 
 a:not([class]) {
@@ -56,24 +50,39 @@ a:not([class]) {
   color: currentColor;
 }
 
-img,
-picture {
-  max-width: 100%;
-  display: block;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
 }
 
-input,
-button,
-textarea,
-select {
-  font-family: inherit;
-  font-size: inherit;
+#root,
+#__next {
+  isolation: isolate;
 }
 
-textarea:not([rows]) {
-  min-height: 10em;
+/* RESET */
+
+header {
+  padding: 1rem;
+  background-color: #333;
 }
 
-:target {
-  scroll-margin-block: 5ex;
+header nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+header nav {
+  color: white;
+}
+
+main {
+  padding: 1rem;
+  margin: 0 auto;
+  max-width: 1024px;
 }
