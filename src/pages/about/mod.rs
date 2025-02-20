@@ -13,6 +13,5 @@ pub fn about() -> String {
     let context = PageContext {
         data: get_data!("about"),
     };
-
     template.render(context!(page => context)).unwrap()
 }
