@@ -4,7 +4,7 @@ use crate::pages::{
 };
 use axum::{extract::Path, response::Html, routing::get, Router};
 
-pub(crate) fn page_routes(router: Router) -> Router {
+pub fn page_routes(router: Router) -> Router {
     router
         .route("/", get(Html(home())))
         .route("/blog", get(Html(blog())))

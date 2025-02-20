@@ -2,9 +2,9 @@
 macro_rules! export {
   ($($module:ident),+) => {
       $(
-          pub(crate) mod $module;
+          pub mod $module;
           #[allow(unused_imports)]
-          pub(crate) use $module::$module;
+          pub use $module::$module;
       )+
   };
 }
@@ -12,18 +12,19 @@ macro_rules! export {
 #[macro_export]
 macro_rules! get_data {
     ({ $param:ident: $value:expr }) => {{
-        const BASE_URL: &str = "https://api.storyblok.com/v2/cdn/stories";
         let token = std::env::var("ST_TOKEN")
             .unwrap_or_else(|_| panic!("ST_TOKEN environment variable not set"));
+        let base_url = std::env::var("ST_BASE_URL")
+            .unwrap_or_else(|_| panic!("ST_BASE_URL environment variable not set"));
 
         let (url, field, filter_value) = match stringify!($param) {
             "slug" => (
-                format!("{}/{}/?token={}", BASE_URL, $value, token),
+                format!("{}/{}/?token={}", base_url, $value, token),
                 "story",
                 None,
             ),
             "starts_with" => (
-                format!("{}?starts_with={}&token={}", BASE_URL, $value, token),
+                format!("{}?starts_with={}&token={}", base_url, $value, token),
                 "stories",
                 Some($value),
             ),
