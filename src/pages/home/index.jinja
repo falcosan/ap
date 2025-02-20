@@ -1,16 +1,13 @@
 {% extends "layout.html" %}
 {% block main %}
-Hello, My name is Daniele.
-<div class="flex flex-col mt-16">
-  <div class="grid grid-flow-col gap-2 justify-center">
-    <button class="size-8" onclick="sub()">-</button>
-    <button class="size-8" onclick="add()">+</button>
-  </div>
-  This is a counter. Try to click the buttons.
-  <pre class="p-16 my-8 shadow-lg text-center text-5xl rounded" id="counter">{{ page.counter }}</pre>
-</div>
+Hello, my name is Daniele.
+<div id="data" />
 <script>
-  const sub = () => fetch('/decrease-counter', { method: 'POST' }).then(e => e.text()).then(e => document.getElementById('counter').innerText = e);
-  const add = () => fetch('/increase-counter', { method: 'POST' }).then(e => e.text()).then(e => document.getElementById('counter').innerText = e);
+  fetch('/get_data_home')
+    .then(async res => {
+      const data = await res.json()
+      const story = data.story || data;
+      document.getElementById('data').textContent = story.name;
+    })
 </script>
 {% endblock %}

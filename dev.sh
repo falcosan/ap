@@ -9,8 +9,8 @@ cleanup() {
 
 trap cleanup SIGINT
 
-cargo watch -q -i .gitignore -s "cargo run" &
+cargo watch -q -i .gitignore -i "assets/index.css" -s "cargo run" &
 
-npx @tailwindcss/cli -i ./src/assets/input.css -o ./src/assets/index.css --watch
+npx @tailwindcss/cli -i ./src/assets/input.css -o ./src/assets/index.css --minify --watch
 
 wait

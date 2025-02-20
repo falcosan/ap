@@ -1,38 +1,27 @@
 use crate::environment::ENV;
 use axum::Json;
-use minijinja::context;
-use serde::Serialize;
-use std::sync::atomic::{AtomicI32, Ordering};
+use serde_json::{json, Value};
+use std::env;
 
-#[derive(Serialize)]
-struct PageContext {
-    counter: i32,
-    title: String,
-}
+pub async fn get_data_home() -> Json<Value> {
+    let st_token = env::var("ST_TOKEN");
+    let response = reqwest::get(format!(
+        "https://api.storyblok.com/v2/cdn/stories/home?token={}",
+        st_token.unwrap()
+    ))
+    .await;
 
-static COUNTER: AtomicI32 = AtomicI32::new(0);
-
-fn read_counter() -> i32 {
-    COUNTER.load(Ordering::SeqCst)
-}
-
-pub async fn increase_counter() -> Json<i32> {
-    let _ = COUNTER.fetch_add(1, Ordering::SeqCst);
-    Json(read_counter())
-}
-
-pub async fn decrease_counter() -> Json<i32> {
-    let _ = COUNTER.fetch_sub(1, Ordering::SeqCst);
-    Json(read_counter())
+    match response {
+        Ok(resp) => match resp.json::<Value>().await {
+            Ok(parsed) => Json(parsed),
+            Err(e) => Json(json!({"error": format!("JSON parsing failed: {}", e)})),
+        },
+        Err(e) => Json(json!({"error": format!("Request failed: {}", e)})),
+    }
 }
 
 pub fn home() -> String {
     let env = ENV.lock().unwrap();
     let template = env.get_template("home.html").unwrap();
-    let context = PageContext {
-        title: "Home".into(),
-        counter: read_counter(),
-    };
-
-    template.render(context!(page => context)).unwrap()
+    template.render(()).unwrap()
 }
