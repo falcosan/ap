@@ -15,11 +15,16 @@ macro_rules! get_data {
         let token = std::env::var("ST_TOKEN")
             .unwrap_or_else(|_| panic!("ST_TOKEN environment variable not set"));
 
-        let (url, field) = match stringify!($param) {
-            "slug" => (format!("{}/{}/?token={}", BASE_URL, $value, token), "story"),
+        let (url, field, filter_value) = match stringify!($param) {
+            "slug" => (
+                format!("{}/{}/?token={}", BASE_URL, $value, token),
+                "story",
+                None,
+            ),
             "starts_with" => (
                 format!("{}?starts_with={}&token={}", BASE_URL, $value, token),
                 "stories",
+                Some($value),
             ),
             _ => panic!("Unsupported parameter: {}", stringify!($param)),
         };
@@ -35,8 +40,22 @@ macro_rules! get_data {
         let json: serde_json::Value = serde_json::from_str(body)
             .unwrap_or_else(|_| panic!("Failed to parse JSON from {}", url));
 
-        json.get(field)
+        let mut data = json
+            .get(field)
             .unwrap_or_else(|| panic!("Missing '{}' field in response", field))
-            .clone()
+            .clone();
+
+        if let Some(filter_value) = filter_value {
+            if let serde_json::Value::Array(ref mut arr) = data {
+                arr.retain(|item| {
+                    item.get("full_slug")
+                        .and_then(|slug| slug.as_str())
+                        .map(|slug| slug != &format!("{}/", filter_value))
+                        .unwrap_or(false)
+                });
+            }
+        }
+
+        data
     }};
 }
