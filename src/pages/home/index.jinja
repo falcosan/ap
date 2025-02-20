@@ -1,16 +1,18 @@
 {% extends "layout.html" %}
 {% block main %}
-Hello, My name is Daniele.
-<div class="flex flex-col mt-16">
-  <div class="grid grid-flow-col gap-2 justify-center">
-    <button class="size-8" onclick="sub()">-</button>
-    <button class="size-8" onclick="add()">+</button>
-  </div>
-  This is a counter. Try to click the buttons.
-  <pre class="p-16 my-8 shadow-lg text-center text-5xl rounded" id="counter">{{ page.counter }}</pre>
-</div>
+Hello, my name is Daniele.
+<div id="data"></div>
 <script>
-  const sub = () => fetch('/decrease-counter', { method: 'POST' }).then(e => e.text()).then(e => document.getElementById('counter').innerText = e);
-  const add = () => fetch('/increase-counter', { method: 'POST' }).then(e => e.text()).then(e => document.getElementById('counter').innerText = e);
+  fetch('/get_data_home')
+    .then(response => response.json())
+    .then(data => {
+      // Assuming the endpoint returns an object with a "story" property.
+      const storyContent = data.story || data;
+      document.getElementById('data').textContent = storyContent;
+    })
+    .catch(error => {
+      console.error('Error fetching the story:', error);
+      document.getElementById('data').textContent = 'Failed to load the story.';
+    });
 </script>
 {% endblock %}
