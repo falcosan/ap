@@ -1,4 +1,6 @@
 {% extends "layout.html" %}
 {% block main %}
-{{ page.data }}
+<h1>{{ page.data.content.title }}</h1>
+<h2>{{ page.data.content.intro }}</h2>
+<p>{{ page.data.content.long_text|safe }}</p>
 {% endblock %}
