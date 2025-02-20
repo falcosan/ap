@@ -10,37 +10,33 @@ macro_rules! export {
 
 #[macro_export]
 macro_rules! get_data {
-    ({ slug: $slug:expr }) => {{
+    ({ $param:ident: $value:expr }) => {{
         const BASE_URL: &str = "https://api.storyblok.com/v2/cdn/stories";
-        let st_token = std::env::var("ST_TOKEN").expect("ST_TOKEN not set");
-        let response = minreq::get(&format!("{}/{}?token={}", BASE_URL, $slug, st_token))
+        let token = std::env::var("ST_TOKEN")
+            .unwrap_or_else(|_| panic!("ST_TOKEN environment variable not set"));
+
+        let (url, field) = match stringify!($param) {
+            "slug" => (format!("{}/{}/?token={}", BASE_URL, $value, token), "story"),
+            "starts_with" => (
+                format!("{}?starts_with={}&token={}", BASE_URL, $value, token),
+                "stories",
+            ),
+            _ => panic!("Unsupported parameter: {}", stringify!($param)),
+        };
+
+        let response = minreq::get(&url)
             .send()
-            .expect("Request failed");
-        let json: serde_json::Value = serde_json::from_str(
-            response
-                .as_str()
-                .expect("Failed to convert response to string"),
-        )
-        .expect("Failed to parse JSON");
+            .unwrap_or_else(|_| panic!("Failed to send request to {}", url));
 
-        json["story"].clone()
-    }};
-    ({ starts_with: $starts_with:expr }) => {{
-        const BASE_URL: &str = "https://api.storyblok.com/v2/cdn/stories";
-        let st_token = std::env::var("ST_TOKEN").expect("ST_TOKEN not set");
-        let response = minreq::get(format!(
-            "{}?starts_with={}&token={}",
-            BASE_URL, $starts_with, st_token
-        ))
-        .send()
-        .expect("Request failed");
-        let json: serde_json::Value = serde_json::from_str(
-            response
-                .as_str()
-                .expect("Failed to convert response to string"),
-        )
-        .expect("Failed to parse JSON");
+        let body = response
+            .as_str()
+            .unwrap_or_else(|_| panic!("Failed to read response body from {}", url));
 
-        json["stories"].clone()
+        let json: serde_json::Value = serde_json::from_str(body)
+            .unwrap_or_else(|_| panic!("Failed to parse JSON from {}", url));
+
+        json.get(field)
+            .unwrap_or_else(|| panic!("Missing '{}' field in response", field))
+            .clone()
     }};
 }
