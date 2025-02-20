@@ -1,11 +1,14 @@
 use crate::environment::ENV;
 use axum::Json;
 use serde_json::{json, Value};
+use std::env;
 
 pub async fn get_data_home() -> Json<Value> {
-    let response = reqwest::get(
-        "https://api.storyblok.com/v2/cdn/stories/home?token=PooXJ6nirb84cdS194fQhgtt",
-    )
+    let st_token = env::var("ST_TOKEN");
+    let response = reqwest::get(format!(
+        "https://api.storyblok.com/v2/cdn/stories/home?token={}",
+        st_token.unwrap()
+    ))
     .await;
 
     match response {

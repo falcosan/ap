@@ -1,18 +1,13 @@
 {% extends "layout.html" %}
 {% block main %}
 Hello, my name is Daniele.
-<div id="data"></div>
+<div id="data" />
 <script>
   fetch('/get_data_home')
-    .then(response => response.json())
-    .then(data => {
-      // Assuming the endpoint returns an object with a "story" property.
-      const storyContent = data.story || data;
-      document.getElementById('data').textContent = storyContent;
+    .then(async res => {
+      const data = await res.json()
+      const story = data.story || data;
+      document.getElementById('data').textContent = story.name;
     })
-    .catch(error => {
-      console.error('Error fetching the story:', error);
-      document.getElementById('data').textContent = 'Failed to load the story.';
-    });
 </script>
 {% endblock %}

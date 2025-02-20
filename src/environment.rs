@@ -1,36 +1,12 @@
 #![allow(dead_code)]
 
+use dotenv::dotenv;
 use minijinja::{
     functions::Function,
     value::{FunctionArgs, FunctionResult},
     Environment, Template,
 };
-use std::error::Error;
-use std::fmt::{Display, Formatter, Result as FMTResult};
 use std::sync::{LazyLock, Mutex};
-
-#[derive(Debug)]
-pub enum TemplateError {
-    NotFound(String),
-}
-
-impl Display for TemplateError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FMTResult {
-        match self {
-            TemplateError::NotFound(name) => {
-                write!(f, "Template '{}' not found", name)
-            }
-        }
-    }
-}
-
-impl Error for TemplateError {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match self {
-            TemplateError::NotFound(_) => None,
-        }
-    }
-}
 
 pub struct EnvWrapper {
     env: Environment<'static>,
@@ -38,6 +14,8 @@ pub struct EnvWrapper {
 
 impl EnvWrapper {
     pub fn new() -> Self {
+        dotenv().ok();
+
         let mut env = Environment::new();
         let templates = [
             ("layout.html", include_str!("layout/default.jinja")),
@@ -48,17 +26,16 @@ impl EnvWrapper {
         ];
 
         for (name, content) in templates {
-            env.add_template(name, content)
-                .unwrap_or_else(|source| panic!("Failed to add template {}: {}", name, source));
+            env.add_template(name, content).unwrap();
         }
 
         Self { env }
     }
 
-    pub fn get_template(&self, name: &str) -> Result<Template, TemplateError> {
+    pub fn get_template(&self, name: &str) -> Result<Template, ()> {
         self.env
             .get_template(name)
-            .map_err(|_| TemplateError::NotFound(name.to_string()))
+            .map_err(|_| panic!("Template not found: {}", name))
     }
 
     pub fn add_function<F, Rv, Args>(&mut self, name: &'static str, func: F)
