@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+<title>{% block title %}DD - {{ page.data.content.title }}{% endblock %}</title>
 {% block main %}
 <h1>{{ page.data.content.title }}</h1>
 <h2>{{ page.data.content.intro }}</h2>
