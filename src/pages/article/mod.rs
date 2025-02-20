@@ -1,4 +1,5 @@
 use crate::environment::ENV;
+use axum::extract::Path;
 use minijinja::context;
 use serde::Serialize;
 
@@ -7,11 +8,11 @@ struct PageContext<T> {
     data: T,
 }
 
-pub fn blog() -> String {
+pub fn article(Path(slug): Path<String>) -> String {
     let env = ENV.lock().unwrap();
-    let template = env.get_template("blog.html").unwrap();
+    let template = env.get_template("article.html").unwrap();
     let context = PageContext {
-        data: get_data!("blog"),
+        data: get_data!(format!("blog/{}", slug)),
     };
     template.render(context!(page => context)).unwrap()
 }

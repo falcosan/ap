@@ -1,8 +1,4 @@
-use crate::pages::{
-    about,
-    blog::{article, blog},
-    home,
-};
+use crate::pages::{about, article, blog, home};
 use axum::{extract::Path, response::Html, routing::get, Router};
 
 pub(crate) fn page_routes(router: Router) -> Router {

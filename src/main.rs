@@ -6,6 +6,7 @@ mod pages {
     export!(home);
     export!(about);
     export!(blog);
+    export!(article);
     export!(fallback);
 }
 
