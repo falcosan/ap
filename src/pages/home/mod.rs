@@ -1,23 +1,38 @@
 use crate::environment::ENV;
-use axum::Json;
-use serde_json::{json, Value};
+use axum::{http::StatusCode, Json};
+use serde_json::{from_str, Value};
 use std::env;
 
-pub async fn get_data_home() -> Json<Value> {
-    let st_token = env::var("ST_TOKEN");
-    let response = reqwest::get(format!(
-        "https://api.storyblok.com/v2/cdn/stories/home?token={}",
-        st_token.unwrap()
-    ))
-    .await;
+pub async fn get_data_home() -> Result<Json<Value>, (StatusCode, String)> {
+    let st_token = env::var("ST_TOKEN").map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Missing ST_TOKEN: {}", e),
+        )
+    })?;
 
-    match response {
-        Ok(resp) => match resp.json::<Value>().await {
-            Ok(parsed) => Json(parsed),
-            Err(e) => Json(json!({"error": format!("JSON parsing failed: {}", e)})),
-        },
-        Err(e) => Json(json!({"error": format!("Request failed: {}", e)})),
-    }
+    let response = minreq::get(format!(
+        "https://api.storyblok.com/v2/cdn/stories/home?token={}",
+        st_token
+    ))
+    .send()
+    .map_err(|e| (StatusCode::BAD_GATEWAY, format!("Request failed: {}", e)))?;
+
+    let response_str = response.as_str().map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Invalid response: {}", e),
+        )
+    })?;
+
+    let json_response: Value = from_str(response_str).map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("JSON parse error: {}", e),
+        )
+    })?;
+
+    Ok(Json(json_response))
 }
 
 pub fn home() -> String {
