@@ -1,3 +1,5 @@
+export!(article);
+
 use crate::environment::ENV;
 use minijinja::context;
 use serde::Serialize;

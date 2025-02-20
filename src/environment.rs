@@ -21,9 +21,11 @@ impl EnvWrapper {
             ("layout.html", include_str!("layout/default.jinja")),
             ("home.html", include_str!("pages/home/index.jinja")),
             ("blog.html", include_str!("pages/blog/index.jinja")),
-            ("about.html", include_str!("pages/about/index.jinja")),
-            ("article.html", include_str!("pages/article/index.jinja")),
             ("fallback.html", include_str!("pages/fallback/index.jinja")),
+            (
+                "article.html",
+                include_str!("pages/blog/article/index.jinja"),
+            ),
         ];
 
         for (name, content) in templates {

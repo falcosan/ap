@@ -3,6 +3,7 @@ macro_rules! export {
   ($($module:ident),+) => {
       $(
           pub(crate) mod $module;
+          #[allow(unused_imports)]
           pub(crate) use $module::$module;
       )+
   };
