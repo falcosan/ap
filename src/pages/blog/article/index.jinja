@@ -1,7 +1,10 @@
 {% extends "layout.html" %}
-<title>{% block title %}DD - {{ page.data.content.title }}{% endblock %}</title>
+
+{% set content = page.data.content %}
+
+{% block title %}{{ super() }} | {{ content.title }} {% endblock %}
 {% block main %}
-<h1>{{ page.data.content.title }}</h1>
-<h2>{{ page.data.content.intro }}</h2>
-<div class="markdown">{{ page.data.content.long_text|safe }}</div>
+<h1>{{ content.title }}</h1>
+<h2>{{ content.intro }}</h2>
+<div class="markdown">{{ content.long_text|safe }}</div>
 {% endblock %}

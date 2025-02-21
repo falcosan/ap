@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
-<title>{% block title %}DD - Blog{% endblock %}</title>
+
+{% block title %}{{ super() }} | Blog {% endblock %}
 {% block main %}
 <ul>
   {% for article in page.articles %}
