@@ -4,7 +4,7 @@ IFS=$'\n\t'
 
 readonly CARGO_CMD="cargo run"
 readonly LOG_PREFIX="[DEV]"
-readonly PORT=8888
+readonly PORT=8000
 
 log() {
   echo "${LOG_PREFIX} $1"

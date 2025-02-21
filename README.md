@@ -52,7 +52,7 @@ For development, you can use the provided shell script:
 ./dev.sh
 ```
 
-The server binds to `127.0.0.1:8888`. Open your browser at [http://127.0.0.1:8888](http://127.0.0.1:8888) to view the application.
+The server binds to `127.0.0.1:8000`. Open your browser at [http://127.0.0.1:8000](http://127.0.0.1:8000) to view the application.
 
 ## Building for Production
 
