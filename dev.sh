@@ -12,7 +12,7 @@ log() {
 cleanup() {
   echo
   if [[ -n "${cargo_watch_pid:-}" ]]; then
-    log "Terminating cargo watch (PID: $cargo_watch_pid)..."
+    log "Terminating cargo watch with PID: $cargo_watch_pid"
     kill "$cargo_watch_pid" &>/dev/null || true
     wait "$cargo_watch_pid" &>/dev/null || true
   fi
@@ -23,7 +23,7 @@ cleanup() {
 main() {
   trap cleanup SIGINT SIGTERM SIGHUP
 
-  log "Starting cargo watch..."
+  log "Starting cargo watch"
   cargo watch -q -i .gitignore -s "${CARGO_CMD}" &
   cargo_watch_pid=$!
 
