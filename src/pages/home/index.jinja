@@ -1,4 +1,6 @@
 {% extends "layout.html" %}
 {% block main %}
-{{ page.data|safe }}
+{% for text in page.data %}
+<div>{{ text }}</div>
+{% endfor %}
 {% endblock %}
