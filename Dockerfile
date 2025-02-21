@@ -1,16 +1,12 @@
-FROM rust:1.70 AS builder
+FROM rust:bookworm AS builder
+ 
 WORKDIR /app
-
 COPY . .
-
 RUN cargo build --release
 
-FROM debian:buster-slim
+FROM debian:bookworm-slim AS runner
 
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends ca-certificates \
-  && rm -rf /var/lib/apt/lists/*
-
-COPY --from=builder /app/target/release/ap /usr/local/bin/ap
+WORKDIR /app
+COPY --from=builder /app/target/release/ap /app/ap
 EXPOSE 8888
-CMD [ "ap" ]
+CMD ["/ap/app"]
