@@ -64,35 +64,31 @@ macro_rules! get_data {
 
 #[macro_export]
 macro_rules! extract_components {
-    ($data:expr) => {{
+    ($data:expr, $name:expr) => {{
         let mut components = Vec::new();
 
-        fn traverse(value: &serde_json::Value, list: &mut Vec<String>) {
+        fn traverse(value: &serde_json::Value, list: &mut Vec<serde_json::Value>, name: &str) {
             match value {
                 serde_json::Value::Object(obj) => {
                     if let Some(component) = obj.get("component") {
-                        if component == "TextContent" {
-                            if let Some(text) = obj.get("text") {
-                                if let Some(text_str) = text.as_str() {
-                                    list.push(text_str.to_string());
-                                }
-                            }
+                        if component.as_str() == Some(name) {
+                            list.push(value.clone());
                         }
                     }
                     for (_, v) in obj {
-                        traverse(v, list);
+                        traverse(v, list, name);
                     }
                 }
                 serde_json::Value::Array(arr) => {
                     for item in arr {
-                        traverse(item, list);
+                        traverse(item, list, name);
                     }
                 }
                 _ => {}
             }
         }
 
-        traverse($data, &mut components);
+        traverse($data, &mut components, $name);
         components
     }};
 }

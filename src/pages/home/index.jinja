@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block main %}
-{% for text in page.data %}
-<div>{{ text }}</div>
+{% for component in page.data %}
+<div>{{ component.text }}</div>
 {% endfor %}
 {% endblock %}

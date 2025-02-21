@@ -11,7 +11,7 @@ pub fn home() -> String {
     let env = ENV.lock().unwrap();
     let template = env.get_template("home.html").unwrap();
     let context = PageContext {
-        data: extract_components!(&get_data!({ slug: "about" })),
+        data: extract_components!(&get_data!({ slug: "about" }), "TextContent"),
     };
     template.render(context!(page => context)).unwrap()
 }
