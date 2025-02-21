@@ -7,5 +7,5 @@
 <h1>{{ content.title }}</h1>
 <img src="{{ content.file.filename }}" alt="{{ content.title|lower }}">
 <h2>{{ content.intro }}</h2>
-<div class="markdown">{{ content.long_text|safe }}</div>
+<article>{{ content.long_text|safe }}</article>
 {% endblock %}

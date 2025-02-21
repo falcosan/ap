@@ -112,11 +112,6 @@ a:not([class]) {
   color: currentColor;
 }
 
-#root,
-#__next {
-  isolation: isolate;
-}
-
 header {
   padding: 1rem;
 }
@@ -136,12 +131,6 @@ main {
 
 section {
   margin-bottom: 2rem;
-}
-
-.markdown {
-  margin-top: 2rem;
-  word-break: break-word;
-  overflow-wrap: anywhere;
 }
 
 img,
@@ -209,7 +198,6 @@ pre code {
   word-break: normal;
 }
 
-/* Blockquotes */
 blockquote {
   position: relative;
   padding: 2.5rem 1.5rem 1.25rem;

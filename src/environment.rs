@@ -1,11 +1,5 @@
-#![allow(dead_code)]
-
 use dotenv::dotenv;
-use minijinja::{
-    functions::Function,
-    value::{FunctionArgs, FunctionResult},
-    Environment, Template,
-};
+use minijinja::{Environment, Template};
 use std::sync::{LazyLock, Mutex};
 
 pub struct EnvWrapper {
@@ -39,15 +33,6 @@ impl EnvWrapper {
         self.env
             .get_template(name)
             .map_err(|_| panic!("Template not found: {}", name))
-    }
-
-    pub fn add_function<F, Rv, Args>(&mut self, name: &'static str, func: F)
-    where
-        F: Function<Rv, Args> + for<'a> Function<Rv, <Args as FunctionArgs<'a>>::Output>,
-        Rv: FunctionResult,
-        Args: for<'a> FunctionArgs<'a>,
-    {
-        self.env.add_function(name, func);
     }
 }
 

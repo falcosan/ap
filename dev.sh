@@ -34,7 +34,6 @@ main() {
   trap cleanup SIGINT SIGTERM SIGHUP
 
   if [[ "${RUST_BACKTRACE:-}" == "1" ]]; then
-    log "RUST_BACKTRACE=1 detected, checking port $PORT"
     kill_port_process
   fi
 
