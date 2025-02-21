@@ -34,7 +34,7 @@ dependencies = [
 
 [[package]]
 name = "ap"
-version = "1.4.7"
+version = "1.0.0"
 dependencies = [
  "axum",
  "chrono",

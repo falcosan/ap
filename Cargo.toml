@@ -1,6 +1,6 @@
 [package]
 name = "ap"
-version = "1.4.7"
+version = "1.0.0"
 edition = "2021"
 description = "ap"
 authors = ["Daniele Falchetti <danielefalche@gmail.com>"]

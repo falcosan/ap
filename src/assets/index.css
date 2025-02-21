@@ -136,7 +136,8 @@ footer {
   max-width: 1024px;
 }
 
-footer {
+footer,
+footer nav {
   justify-content: center;
 }
 
