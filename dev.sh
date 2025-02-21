@@ -4,9 +4,19 @@ IFS=$'\n\t'
 
 readonly CARGO_CMD="cargo run"
 readonly LOG_PREFIX="[DEV]"
+readonly PORT=8888
 
 log() {
   echo "${LOG_PREFIX} $1"
+}
+
+kill_port_process() {
+  local pid
+  pid=$(lsof -ti:"$PORT" 2>/dev/null)
+  if [[ -n "$pid" ]]; then
+    log "Killing process using port $PORT (PID: $pid)"
+    kill -9 "$pid" 2>/dev/null || true
+  fi
 }
 
 cleanup() {
@@ -23,11 +33,16 @@ cleanup() {
 main() {
   trap cleanup SIGINT SIGTERM SIGHUP
 
-  log "Starting cargo watch"
+  if [[ "${RUST_BACKTRACE:-}" == "1" ]]; then
+    log "RUST_BACKTRACE=1 detected, checking port $PORT"
+    kill_port_process
+  fi
+
+  log "Starting cargo run"
   cargo watch -q -i .gitignore -s "${CARGO_CMD}" &
   cargo_watch_pid=$!
 
-  log "Cargo watch running with PID: $cargo_watch_pid"
+  log "cargo run running with PID: $cargo_watch_pid"
   wait "$cargo_watch_pid"
 }
 
