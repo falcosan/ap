@@ -76,23 +76,21 @@ macro_rules! extract_components {
         ) {
             if let serde_json::Value::Object(obj) = value {
                 if let Some(component) = obj.get("component") {
-                    if let Some(component_str) = component.as_str() {
-                        if component_str == name {
-                            if name == "TextContent" {
-                                if let Some(text) = obj.get("text").and_then(|t| t.as_str()) {
-                                    markdown_buffer.clear();
-                                    let parser = pulldown_cmark::Parser::new(text);
-                                    pulldown_cmark::html::push_html(markdown_buffer, parser);
-                                    let mut new_obj = obj.clone();
-                                    new_obj.insert(
-                                        "text".to_string(),
-                                        serde_json::Value::String(markdown_buffer.clone()),
-                                    );
-                                    list.push(serde_json::Value::Object(new_obj));
-                                }
-                            } else {
-                                list.push(value.clone());
+                    if component == name {
+                        if name == "TextContent" {
+                            if let Some(text) = obj.get("text").and_then(|t| t.as_str()) {
+                                markdown_buffer.clear();
+                                let parser = pulldown_cmark::Parser::new(text);
+                                pulldown_cmark::html::push_html(markdown_buffer, parser);
+                                let mut new_obj = obj.clone();
+                                new_obj.insert(
+                                    "text".to_string(),
+                                    serde_json::Value::String(markdown_buffer.clone()),
+                                );
+                                list.push(serde_json::Value::Object(new_obj));
                             }
+                        } else {
+                            list.push(value.clone());
                         }
                     }
                 }
