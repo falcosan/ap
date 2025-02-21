@@ -1,3 +1,4 @@
+use chrono::Datelike;
 use dotenv::dotenv;
 use minijinja::{Environment, Template};
 use std::sync::{LazyLock, Mutex};
@@ -25,6 +26,8 @@ impl EnvWrapper {
         for (name, content) in templates {
             env.add_template(name, content).unwrap();
         }
+
+        env.add_global("current_year", chrono::Utc::now().year().to_string());
 
         Self { env }
     }

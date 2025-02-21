@@ -2,23 +2,34 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="DD" />
   <title>{% block title %}DD{% endblock %}</title>
-  <link href="/favicon.ico" rel="icon" type="image/x-icon">
-  <link href="/index.css" rel="stylesheet">
+  <link href="/favicon.ico" rel="icon" type="image/x-icon" />
+  <link href="/index.css" rel="stylesheet" />
 </head>
 
 <body>
   <header>
-    <nav>
+    <nav aria-label="Main Navigation">
       <a href="/">Home</a>
       <a href="/blog">Blog</a>
     </nav>
   </header>
+
   <main>
     {% block main %}{% endblock %}
   </main>
+
+  <footer>
+    <span>&copy; {{ current_year }}</span>
+    <nav aria-label="Footer Navigation">
+      <a href="https://linkedin.com/in/danielefalchetti/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href="https://github.com/falcosan" target="_blank" rel="noopener noreferrer">GitHub</a>
+    </nav>
+  </footer>
+
 </body>
 
 </html>
