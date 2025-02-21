@@ -1,4 +1,3 @@
-/* Reset and Base Styles */
 :root {
   --text-color: white;
   --bg-color: #333;
@@ -58,7 +57,50 @@ h3,
 h4,
 h5,
 h6 {
+  margin-top: 0;
+  margin-bottom: 1.25rem;
   text-wrap: balance;
+}
+
+li h1,
+li h2,
+li h3,
+li h4,
+li h5,
+li h6 {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(1.85rem, 1.6rem + 1.5vw, 3rem);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: clamp(1.8rem, 1.4rem + 1vw, 3rem);
+  line-height: 1.375;
+}
+
+h3 {
+  font-size: clamp(1.4rem, 1rem + 0.6vw, 2.2rem);
+  line-height: 1.5;
+}
+
+h4 {
+  font-size: clamp(1.2rem, 0.8rem + 0.4vw, 1.8rem);
+  line-height: 1.625;
+}
+
+h5 {
+  font-size: clamp(1rem, 0.6rem + 0.2vw, 1.4rem);
+  line-height: 1.7;
+  font-weight: 600;
+}
+
+h6 {
+  font-size: clamp(0.8rem, 0.4rem + 0.1vw, 1rem);
+  line-height: 1.775;
+  font-weight: 600;
 }
 
 p {
@@ -75,7 +117,6 @@ a:not([class]) {
   isolation: isolate;
 }
 
-/* Layout */
 header {
   padding: 1rem;
 }
@@ -93,14 +134,16 @@ main {
   max-width: 1024px;
 }
 
-/* Markdown Content */
+section {
+  margin-bottom: 2rem;
+}
+
 .markdown {
   margin-top: 2rem;
   word-break: break-word;
   overflow-wrap: anywhere;
 }
 
-/* Media Elements */
 img,
 video,
 figure,
@@ -125,23 +168,7 @@ iframe {
   aspect-ratio: 1 / 1;
 }
 
-/* Modal */
-.-modal {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 50;
-  background-color: rgba(193, 193, 193, 0.9);
-}
 
-.-modal>img {
-  height: 100%;
-  object-fit: contain;
-}
-
-/* Links */
 a,
 u {
   text-decoration: underline;
@@ -157,7 +184,6 @@ a:hover {
   transition: opacity 100ms ease;
 }
 
-/* Code Blocks */
 pre {
   position: relative;
   border-radius: 0.25rem;
@@ -207,7 +233,6 @@ blockquote::before {
   color: white;
 }
 
-/* Tables */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -232,7 +257,6 @@ th:last-child {
   padding-right: 0;
 }
 
-/* Lists */
 dl,
 ol,
 ul {
@@ -267,7 +291,6 @@ li>p:first-child {
   display: inline;
 }
 
-/* Miscellaneous */
 hr {
   border: 0;
   border-top: 1px solid var(--border-color);

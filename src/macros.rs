@@ -65,30 +65,49 @@ macro_rules! get_data {
 #[macro_export]
 macro_rules! extract_components {
     ($data:expr, $name:expr) => {{
-        let mut components = Vec::new();
+        let target_name = $name;
+        let mut components = Vec::with_capacity(32);
 
-        fn traverse(value: &serde_json::Value, list: &mut Vec<serde_json::Value>, name: &str) {
-            match value {
-                serde_json::Value::Object(obj) => {
-                    if let Some(component) = obj.get("component") {
-                        if component.as_str() == Some(name) {
-                            list.push(value.clone());
+        fn traverse<'a>(
+            value: &'a serde_json::Value,
+            list: &mut Vec<serde_json::Value>,
+            name: &str,
+            markdown_buffer: &mut String,
+        ) {
+            if let serde_json::Value::Object(obj) = value {
+                if let Some(component) = obj.get("component") {
+                    if let Some(component_str) = component.as_str() {
+                        if component_str == name {
+                            if name == "TextContent" {
+                                if let Some(text) = obj.get("text").and_then(|t| t.as_str()) {
+                                    markdown_buffer.clear();
+                                    let parser = pulldown_cmark::Parser::new(text);
+                                    pulldown_cmark::html::push_html(markdown_buffer, parser);
+                                    let mut new_obj = obj.clone();
+                                    new_obj.insert(
+                                        "text".to_string(),
+                                        serde_json::Value::String(markdown_buffer.clone()),
+                                    );
+                                    list.push(serde_json::Value::Object(new_obj));
+                                }
+                            } else {
+                                list.push(value.clone());
+                            }
                         }
                     }
-                    for (_, v) in obj {
-                        traverse(v, list, name);
-                    }
                 }
-                serde_json::Value::Array(arr) => {
-                    for item in arr {
-                        traverse(item, list, name);
-                    }
+                for v in obj.values() {
+                    traverse(v, list, name, markdown_buffer);
                 }
-                _ => {}
+            } else if let serde_json::Value::Array(arr) = value {
+                for item in arr {
+                    traverse(item, list, name, markdown_buffer);
+                }
             }
         }
 
-        traverse($data, &mut components, $name);
+        let mut markdown_buffer = String::with_capacity(1024);
+        traverse($data, &mut components, target_name, &mut markdown_buffer);
         components
     }};
 }
