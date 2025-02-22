@@ -1,3 +1,5 @@
+use std::env;
+
 #[macro_use]
 mod macros;
 mod environment;
@@ -10,7 +12,8 @@ mod pages {
 
 #[tokio::main]
 async fn main() {
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:8000")
+    let port = env::var("PORT").unwrap_or_else(|_| "8000".to_string());
+    let listener = tokio::net::TcpListener::bind(format!("127.0.0.1:{}", port))
         .await
         .expect("Failed to bind listener");
     println!("Listening on {}", listener.local_addr().unwrap());

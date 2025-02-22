@@ -11,8 +11,7 @@ struct PageContext<T> {
 }
 
 pub fn blog() -> String {
-    let env = ENV.lock().unwrap();
-    let template = env.get_template("blog.html").unwrap();
+    let template = &ENV.get_template("blog.html");
     let context = PageContext {
         data: get_data!({ slug: "blog" }),
         articles: get_data!({ starts_with: "blog" }),

@@ -9,8 +9,7 @@ struct PageContext<T> {
 }
 
 pub fn article(Path(slug): Path<String>) -> String {
-    let env = ENV.lock().unwrap();
-    let template = env.get_template("article.html").unwrap();
+    let template = &ENV.get_template("article.html");
     let context = PageContext {
         data: get_data!({ slug: format!("blog/{}", slug) }),
     };

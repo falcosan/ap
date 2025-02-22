@@ -1,7 +1,7 @@
 use chrono::{Datelike, Utc};
 use dotenv::dotenv;
 use minijinja::{Environment, Template};
-use std::sync::{LazyLock, Mutex};
+use std::sync::LazyLock;
 
 pub struct EnvWrapper {
     env: Environment<'static>,
@@ -26,17 +26,16 @@ impl EnvWrapper {
         for (name, content) in templates {
             env.add_template(name, content).unwrap();
         }
-
         env.add_global("current_year", Utc::now().year().to_string());
 
         Self { env }
     }
 
-    pub fn get_template(&self, name: &str) -> Result<Template, ()> {
+    pub fn get_template(&self, name: &str) -> Template {
         self.env
             .get_template(name)
-            .map_err(|_| panic!("Template not found: {}", name))
+            .unwrap_or_else(|err| panic!("Template not found ({}): {:?}", name, err))
     }
 }
 
-pub static ENV: LazyLock<Mutex<EnvWrapper>> = LazyLock::new(|| Mutex::new(EnvWrapper::new()));
+pub static ENV: LazyLock<EnvWrapper> = LazyLock::new(|| EnvWrapper::new());
