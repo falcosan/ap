@@ -37,7 +37,11 @@ svg {
 img,
 picture {
   object-fit: cover;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 16 / 10;
+}
+
+video {
+  aspect-ratio: 16 / 10;
 }
 
 input,
