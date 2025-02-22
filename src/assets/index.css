@@ -34,6 +34,12 @@ svg {
   max-width: 100%;
 }
 
+img,
+picture {
+  object-fit: cover;
+  aspect-ratio: 16 / 9;
+}
+
 input,
 button,
 textarea,
