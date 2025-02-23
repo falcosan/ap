@@ -7,8 +7,8 @@
   --text: #333333;
   --text-light: #666666;
   --border: #999999;
-  --accent: #4287f5;
-  --accent-hover: #1e5fba;
+  --accent: #3cb371;
+  --accent-hover: #2e8b57;
   --accent-text: #ffffff;
   --code: #e7473c;
   --preformatted: #555555;
@@ -23,8 +23,8 @@
     --accent-bg: #2d2d2d;
     --text: #e0e0e0;
     --text-light: #b0b0b0;
-    --accent: #64b5f6;
-    --accent-hover: #90caf9;
+    --accent: #66bb6a;
+    --accent-hover: #4caf50;
     --code: #ff8a65;
     --preformatted: #bdbdbd;
     --disabled: #424242;
