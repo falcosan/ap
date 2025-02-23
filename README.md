@@ -7,7 +7,7 @@ A simple web application built in Rust using [Axum](https://github.com/tokio-rs/
 - **Rust Web Server**: Uses [`axum`](https://github.com/tokio-rs/axum) for building an asynchronous HTTP server.
 - **Templating**: Renders HTML pages using [`minijinja`](https://github.com/mitsuhiko/minijinja) with custom layouts and page templates.
 - **Dynamic Data**: Fetches data from Storyblok through a custom `get_data!` macro defined in [`src/macros.rs`](src/macros.rs).
-- **Static Assets**: Serves static files such as the CSS and favicon from [`src/assets/`](src/assets/).
+- **Static Assets**: Serves static files such as the CSS and favicon from [`src/static/`](src/static/).
 
 ## Project Structure
 
@@ -21,7 +21,7 @@ A simple web application built in Rust using [Axum](https://github.com/tokio-rs/
 - **src/router/**: Implements routing logic:
   - **Page Routes**: [src/router/page_routes.rs](src/router/page_routes.rs)
   - **Static Source Routes**: [src/router/source_routes.rs](src/router/source_routes.rs)
-- **assets**: Static files such as [src/assets/index.css](src/assets/index.css) and [src/assets/favicon.ico](src/assets/favicon.ico).
+- **static**: Static files such as [src/static/index.css](src/static/index.css) and [src/static/favicon.ico](src/static/favicon.ico).
 
 ## Prerequisites
 

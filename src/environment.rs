@@ -19,12 +19,23 @@ impl EnvWrapper {
                 include_str!("pages/blog/article/index.jinja"),
             ),
         ];
+        let globals = [
+            ("current_year", Utc::now().year().to_string()),
+            ("origin_dd", env::var("ORIGIN_DD").unwrap_or_default()),
+            (
+                "google_verification",
+                env::var("GOOGLE_VERIFICATION").unwrap_or_default(),
+            ),
+        ];
 
         for (name, content) in templates {
-            env.add_template(name, content).unwrap();
+            env.add_template(name, content)
+                .unwrap_or_else(|_| panic!("Template already exist: {}", name))
         }
-        env.add_global("current_year", Utc::now().year().to_string());
-        env.add_global("origin_dd", env::var("ORIGIN_DD").unwrap_or_default());
+        for (key, value) in globals {
+            env.add_global(key, value);
+        }
+
         env.add_filter("date_format", |v: &str| {
             NaiveDateTime::parse_from_str(v, "%Y-%m-%d %H:%M")
                 .map(|dt| dt.date())
