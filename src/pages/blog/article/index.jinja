@@ -11,10 +11,8 @@
 {% endif %}
 {% endmacro %}
 
-{% block title %}
-{{ super() }} | {{ content.title }}
-{% endblock %}
 {% block head %}
+<title>AP | {{ content.title }}</title>
 <link rel="canonical" href="{{ url }}" />
 
 {{ meta_tag("og:url", url) }}
