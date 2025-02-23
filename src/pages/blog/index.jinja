@@ -1,15 +1,20 @@
 {% extends "layout.html" %}
 
 {% block title %}{{ super() }} | Blog{% endblock %}
+
 {% block meta %}
 <meta name="description" content="{{ self.title() }}" />
 <link rel="canonical" href="{{ origin_dd ~ page.data.path }}" />
 {% endblock %}
 
 {% block main %}
+{% if page.articles is defined %}
 <ul>
   {% for article in page.articles %}
-  <li><a href="{{ article.full_slug }}">{{ article.content.title }}</a></li>
+  <li>
+    <a href="{{ article.full_slug }}">{{ article.content.title }}</a>
+  </li>
   {% endfor %}
 </ul>
+{% endif %}
 {% endblock %}

@@ -1,7 +1,9 @@
 {% extends "layout.html" %}
 
 {% block main %}
+{% if page.data is defined %}
 {% for component in page.data %}
 <section>{{ component.text|safe }}</section>
 {% endfor %}
+{% endif %}
 {% endblock %}

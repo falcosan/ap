@@ -11,7 +11,8 @@
 {% endif %}
 {% endmacro %}
 
-{% block title %}{{ super() }} | {{ content.title }}{% endblock %}
+{% block title %}{{ super() }} | {{ content.title or "Article" }}{% endblock %}
+
 {% block meta %}
 <link rel="canonical" href="{{ url }}" />
 
