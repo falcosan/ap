@@ -1,10 +1,11 @@
 {% extends "layout.html" %}
 
-{% block head %}
-<title>AP | Blog</title>
-<meta name="description" content="AP | Blog" />
+{% block title %}{{ super() }} | Blog{% endblock %}
+{% block meta %}
+<meta name="description" content="{{ self.title() }}" />
 <link rel="canonical" href="{{ origin_dd ~ page.data.path }}" />
 {% endblock %}
+
 {% block main %}
 <ul>
   {% for article in page.articles %}

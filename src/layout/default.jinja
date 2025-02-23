@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+{% set name = "AP" %}
 
 <head>
-  {% block head %}
-  <title>AP</title>
+  <title>{% block title %}{{ name }}{% endblock %}</title>
+  {% block meta %}
+  <meta name="description" content="{{ name }}" />
   <link rel="canonical" href="{{ origin_dd }}" />
   {% endblock %}
   <link href="/index.css" rel="stylesheet" />
   <link href="/favicon.ico" rel="icon" type="image/x-icon" />
   <meta charset="UTF-8" />
-  <meta name="description" content="AP" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 
