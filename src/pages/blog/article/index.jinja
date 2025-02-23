@@ -5,6 +5,7 @@
 {% block title %}{{ super() }} | {{ content.title }} {% endblock %}
 {% block main %}
 <h1>{{ content.title }}</h1>
+<pre><i>{{ content.date|date_format }}</i></pre>
 <img src="{{ content.file.filename }}" alt="{{ content.title|lower }}">
 <h2>{{ content.intro }}</h2>
 <article>{{ content.long_text|safe }}</article>

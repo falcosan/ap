@@ -1,4 +1,4 @@
-use chrono::{Datelike, Utc};
+use chrono::{Datelike, NaiveDate, NaiveDateTime, Utc};
 use dotenv::dotenv;
 use minijinja::{Environment, Template};
 use std::sync::LazyLock;
@@ -27,6 +27,12 @@ impl EnvWrapper {
             env.add_template(name, content).unwrap();
         }
         env.add_global("current_year", Utc::now().year().to_string());
+        env.add_filter("date_format", |v: &str| {
+            NaiveDateTime::parse_from_str(v, "%Y-%m-%d %H:%M")
+                .map(|dt| dt.date())
+                .or_else(|_| NaiveDate::parse_from_str(v, "%Y-%m-%d"))
+                .map_or_else(|_| v.to_string(), |d| d.format("%d %b %Y").to_string())
+        });
 
         Self { env }
     }
