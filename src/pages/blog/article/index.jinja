@@ -1,11 +1,38 @@
 {% extends "layout.html" %}
 
 {% set content = page.data.content %}
+{% set url = origin_dd ~ page.data.full_slug %}
 
-{% block title %}{{ super() }} | {{ content.title }} {% endblock %}
+{% macro meta_tag(attribute, value, type="property") %}
+{% if type == "name" %}
+<meta name="{{ attribute }}" content="{{ value }}">
+{% else %}
+<meta property="{{ attribute }}" content="{{ value }}">
+{% endif %}
+{% endmacro %}
+
+{% block title %}
+{{ super() }} | {{ content.title }}
+{% endblock %}
+{% block head %}
+<link rel="canonical" href="{{ url }}" />
+
+{{ meta_tag("og:url", url) }}
+{{ meta_tag("og:type", "article") }}
+{{ meta_tag("og:title", content.title) }}
+{{ meta_tag("twitter:title", content.title) }}
+{{ meta_tag("og:description", content.intro) }}
+{{ meta_tag("og:image", content.file.filename) }}
+{{ meta_tag("twitter:description", content.intro) }}
+{{ meta_tag("description", content.intro, "name") }}
+{{ meta_tag("twitter:card", "summary_large_image") }}
+{{ meta_tag("twitter:image", content.file.filename) }}
+{% endblock %}
+
 {% block main %}
-<p><i>{{ content.date|date_format }}</i></p>
+<p class="slug">{{ content.full_slug }}</p>
+<p><i>{{ content.date | date_format }}</i></p>
 <h1>{{ content.title }}</h1>
 <h2>{{ content.intro }}</h2>
-<article>{{ content.long_text|safe }}</article>
+<article>{{ content.long_text | safe }}</article>
 {% endblock %}

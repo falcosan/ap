@@ -1,6 +1,6 @@
 use chrono::{Datelike, NaiveDate, NaiveDateTime, Utc};
 use minijinja::{Environment, Template};
-use std::sync::LazyLock;
+use std::{env, sync::LazyLock};
 
 pub struct EnvWrapper {
     env: Environment<'static>,
@@ -24,6 +24,7 @@ impl EnvWrapper {
             env.add_template(name, content).unwrap();
         }
         env.add_global("current_year", Utc::now().year().to_string());
+        env.add_global("origin_dd", env::var("ORIGIN_DD").unwrap_or_default());
         env.add_filter("date_format", |v: &str| {
             NaiveDateTime::parse_from_str(v, "%Y-%m-%d %H:%M")
                 .map(|dt| dt.date())

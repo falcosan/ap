@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 
 {% block title %}{{ super() }} | Blog {% endblock %}
+{% block head %}
+<link rel="canonical" href="{{ origin_dd ~ page.data.path }}" />
+{% endblock %}
 {% block main %}
 <ul>
   {% for article in page.articles %}
