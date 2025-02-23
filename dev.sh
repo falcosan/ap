@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 IFS=$'\n\t'
 
@@ -10,12 +11,16 @@ log() {
   echo "${LOG_PREFIX} $1"
 }
 
-kill_port_process() {
-  local pid
-  pid=$(lsof -ti:"$PORT" 2>/dev/null)
-  if [[ -n "$pid" ]]; then
-    log "Killing process using port $PORT (PID: $pid)"
-    kill -9 "$pid" 2>/dev/null || true
+kill_old_port_process() {
+  local pids
+  pids=$(lsof -ti:"$PORT" 2>/dev/null || true)
+  if [[ -n "$pids" ]]; then
+    for pid in $pids; do
+      log "Killing process using port $PORT (PID: $pid)"
+      kill -9 "$pid" 2>/dev/null || true
+    done
+
+    kill_old_port_process
   fi
 }
 
@@ -33,15 +38,13 @@ cleanup() {
 main() {
   trap cleanup SIGINT SIGTERM SIGHUP
 
-  if [[ "${RUST_BACKTRACE:-}" == "1" ]]; then
-    kill_port_process
-  fi
+  kill_old_port_process
 
   log "Starting cargo run"
   cargo watch -q -i .gitignore -s "${CARGO_CMD}" &
   cargo_watch_pid=$!
-
   log "cargo run running with PID: $cargo_watch_pid"
+  
   wait "$cargo_watch_pid"
 }
 
