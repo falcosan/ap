@@ -92,88 +92,54 @@ body>footer {
   border-top: 1px solid var(--border);
 }
 
-h1 {
-  font-size: 3rem;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  overflow-wrap: break-word;
+}
+
+p:first-child {
   margin-top: 0;
 }
 
-h2 {
-  font-size: 2.6rem;
-  margin-top: 0;
-}
-
-h3 {
-  font-size: 2rem;
-  margin-top: 0;
-}
-
-h4 {
-  font-size: 1.44rem;
-  margin-top: 0;
-}
-
-h5 {
-  font-size: 1.15rem;
-  margin-top: 0;
-}
-
-h6 {
-  font-size: 0.96rem;
-  margin-top: 0;
-}
-
-
-@media only screen and (max-width: 720px) {
-  h1 {
-    font-size: 2.5rem;
-  }
-
-  h2 {
-    font-size: 2.1rem;
-  }
-
-  h3 {
-    font-size: 1.75rem;
-  }
-
-  h4 {
-    font-size: 1.25rem;
-  }
-}
-
-
-p,
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  overflow-wrap: break-word;
+  margin-top: 0;
 }
 
-h1,
-h2,
-h3 {
+h1 {
+  font-size: 3rem;
   line-height: 1.1;
 }
 
-@media only screen and (max-width: 720px) {
-  h1 {
-    font-size: 2.5rem;
-  }
+h2 {
+  font-size: 2.6rem;
+  line-height: 1.1;
+}
 
-  h2 {
-    font-size: 2.1rem;
-  }
+h3 {
+  font-size: 2rem;
+  line-height: 1.1;
+}
 
-  h3 {
-    font-size: 1.75rem;
-  }
+h4 {
+  font-size: 1.44rem;
+}
 
-  h4 {
-    font-size: 1.25rem;
-  }
+h5 {
+  font-size: 1.15rem;
+}
+
+h6 {
+  font-size: 0.96rem;
 }
 
 a,
@@ -241,15 +207,18 @@ header>nav {
   font-size: 1rem;
   line-height: 2;
   padding-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
 }
 
 header>nav ul,
 header>nav ol {
-  align-content: space-around;
-  align-items: center;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -267,13 +236,6 @@ header>nav a:visited {
   color: var(--text);
   padding: 0.1rem 1rem;
   text-decoration: none;
-}
-
-header>nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem;
 }
 
 header>nav a:hover,
@@ -305,14 +267,6 @@ aside {
 
 *[dir="rtl"] aside {
   float: left;
-}
-
-@media only screen and (max-width: 720px) {
-  aside {
-    width: 100%;
-    float: none;
-    margin-inline-start: 0;
-  }
 }
 
 fieldset,
@@ -472,14 +426,11 @@ input[type="checkbox"]:checked::after {
   content: " ";
   width: 0.18em;
   height: 0.32em;
-  border-radius: 0;
   position: absolute;
   top: 0.05em;
   left: 0.17em;
-  background-color: transparent;
-  border-right: solid var(--bg) 0.08em;
-  border-bottom: solid var(--bg) 0.08em;
-  font-size: 1.8em;
+  border-right: 0.08em solid var(--bg);
+  border-bottom: 0.08em solid var(--bg);
   transform: rotate(45deg);
 }
 
@@ -487,12 +438,11 @@ input[type="radio"]:checked::after {
   content: " ";
   width: 0.25em;
   height: 0.25em;
-  border-radius: 100%;
   position: absolute;
   top: 0.125em;
-  background-color: var(--bg);
   left: 0.125em;
-  font-size: 32px;
+  border-radius: 50%;
+  background-color: var(--bg);
 }
 
 @media only screen and (max-width: 720px) {
@@ -516,7 +466,7 @@ input[type="file"] {
 hr {
   border: none;
   height: 1px;
-  background: var(--border);
+  background-color: var(--border);
   margin: 1rem auto;
 }
 
@@ -528,7 +478,7 @@ mark {
 }
 
 mark a {
-  color: #0d47a1;
+  color: var(--accent);
 }
 
 img,
@@ -558,9 +508,8 @@ figcaption {
 }
 
 blockquote {
-  margin-inline-start: 2rem;
-  margin-inline-end: 0;
   margin-block: 2rem;
+  margin-inline-start: 2rem;
   padding: 0.4rem 0.8rem;
   border-inline-start: 0.35rem solid var(--accent);
   color: var(--text-light);
@@ -629,8 +578,7 @@ progress::-webkit-progress-value {
 progress::-moz-progress-bar {
   border-radius: var(--standard-border-radius);
   background-color: var(--accent);
-  transition-property: width;
-  transition-duration: 0.3s;
+  transition: width 0.3s;
 }
 
 progress:indeterminate::-moz-progress-bar {
@@ -669,7 +617,7 @@ sub {
 }
 
 .notice {
-  background: var(--accent-bg);
+  background-color: var(--accent-bg);
   border: 2px solid var(--border);
   border-radius: var(--standard-border-radius);
   padding: 1.5rem;
