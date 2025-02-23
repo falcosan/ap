@@ -1,3 +1,4 @@
+use dotenv::dotenv;
 use std::{env, net::SocketAddr};
 use tokio::net::TcpListener;
 use tower_http::cors::CorsLayer;
@@ -14,6 +15,8 @@ mod pages {
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
+
     let port: u16 = env::var("PORT")
         .unwrap_or_else(|_| "8000".to_string())
         .parse()

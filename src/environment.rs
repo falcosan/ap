@@ -1,5 +1,4 @@
 use chrono::{Datelike, NaiveDate, NaiveDateTime, Utc};
-use dotenv::dotenv;
 use minijinja::{Environment, Template};
 use std::sync::LazyLock;
 
@@ -9,8 +8,6 @@ pub struct EnvWrapper {
 
 impl EnvWrapper {
     pub fn new() -> Self {
-        dotenv().ok();
-
         let mut env = Environment::new();
         let templates = [
             ("layout.html", include_str!("layout/default.jinja")),
