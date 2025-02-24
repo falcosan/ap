@@ -42,10 +42,10 @@ macro_rules! get_data {
         let json: serde_json::Value = serde_json::from_str(body)
             .unwrap_or_else(|_| panic!("Failed to parse JSON from {}", url));
 
-        let mut data = json
-            .get(field)
-            .unwrap_or_else(|| panic!("Missing '{}' field in response", field))
-            .clone();
+        let mut data = match json.get(field) {
+            Some(value) => value.clone(),
+            None => serde_json::Value::Array(vec![]),
+        };
 
         if let Some(filter_value) = filter_value {
             if let serde_json::Value::Array(ref mut arr) = data {

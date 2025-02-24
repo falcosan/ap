@@ -1,5 +1,6 @@
 use chrono::{Datelike, NaiveDate, NaiveDateTime, Utc};
-use minijinja::{Environment, Template};
+use minijinja::context;
+use minijinja::Environment;
 use std::{env, sync::LazyLock};
 
 pub struct EnvWrapper {
@@ -21,7 +22,7 @@ impl EnvWrapper {
         ];
         let globals = [
             ("current_year", Utc::now().year().to_string()),
-            ("origin_dd", env::var("ORIGIN_DD").unwrap_or_default()),
+            ("origin_ap", env::var("ORIGIN_AP").unwrap_or_default()),
             (
                 "google_verification",
                 env::var("GOOGLE_VERIFICATION").unwrap_or_default(),
@@ -46,10 +47,16 @@ impl EnvWrapper {
         Self { env }
     }
 
-    pub fn get_template(&self, name: &str) -> Template {
+    pub fn render_template<T: serde::Serialize>(&self, name: &str, context: T) -> String {
         self.env
             .get_template(name)
-            .unwrap_or_else(|err| panic!("Template not found ({}): {:?}", name, err))
+            .and_then(|template| template.render(context!(page => context)))
+            .or_else(|_| {
+                self.env
+                    .get_template("fallback.html")
+                    .and_then(|t| t.render(context!(page => context)))
+            })
+            .unwrap()
     }
 }
 
