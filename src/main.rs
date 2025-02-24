@@ -1,6 +1,8 @@
+use axum::{extract::Request, http::Method, ServiceExt};
 use std::{env, net::SocketAddr};
 use tokio::net::TcpListener;
-use tower_http::cors::CorsLayer;
+use tower_http::{cors::CorsLayer, normalize_path::NormalizePathLayer};
+use tower_layer::Layer;
 
 #[macro_use]
 mod macros;
@@ -35,7 +37,15 @@ async fn main() {
         .filter_map(|origin| origin.parse().ok())
         .collect::<Vec<_>>();
 
-    let app = router::router().layer(CorsLayer::new().allow_origin(allowed_origins));
+    let app = ServiceExt::<Request>::into_make_service(
+        NormalizePathLayer::trim_trailing_slash().layer(
+            router::router().layer(
+                CorsLayer::new()
+                    .allow_methods([Method::GET])
+                    .allow_origin(allowed_origins),
+            ),
+        ),
+    );
 
     axum::serve(listener, app).await.expect("Server error");
 }

@@ -12,7 +12,7 @@
 <ul>
   {% for article in page.articles %}
   <li>
-    <a href="{{ article.full_slug }}">{{ article.content.title }}</a>
+    <a href="/{{ article.full_slug }}">{{ article.content.title }}</a>
   </li>
   {% endfor %}
 </ul>
