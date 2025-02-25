@@ -8,7 +8,7 @@ struct PageContext<T> {
 
 pub fn home() -> String {
     let context = PageContext {
-        data: extract_components!(&get_data!({ slug: "about" }), "TextContent"),
+        data: extract_components!(&get_data!({ slug: "home" }), "TextContent"),
     };
     ENV.render_template("home.html", context)
 }
