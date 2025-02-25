@@ -16,14 +16,9 @@ static XML_API_BASE: LazyLock<String> =
 
 async fn fetch_xml(path: &str) -> Result<String, Box<dyn Error>> {
     let url = format!("{}/{}", *XML_API_BASE, path);
+    let response = ureq::get(&url).call()?.body_mut().read_to_string()?;
 
-    let response = minreq::get(&url).with_timeout(5).send()?;
-
-    if response.status_code != 200 {
-        return Err(format!("HTTP Error: {}", response.status_code).into());
-    }
-
-    response.as_str().map(String::from).map_err(|e| e.into())
+    Ok(response)
 }
 
 async fn xml_handler(path: &str) -> Result<Response<String>, StatusCode> {
