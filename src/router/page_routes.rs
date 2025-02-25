@@ -27,11 +27,11 @@ fn xml_response(
 }
 pub fn page_routes(router: Router) -> Router {
     router
-        .route("/", get(|| async move { Html(home()) }))
-        .route("/blog", get(|| async move { Html(blog()) }))
+        .route("/", get(|| async { Html(home()) }))
+        .route("/blog", get(|| async { Html(blog()) }))
         .route(
             "/blog/{slug}",
-            get(|params: Path<String>| async move { Html(article(params)) }),
+            get(|params: Path<String>| async { Html(article(params)) }),
         )
         .route("/rss.xml", get(xml_response(fetch_xml("rss.xml"))))
         .route("/sitemap.xml", get(xml_response(fetch_xml("sitemap.xml"))))
