@@ -4,27 +4,45 @@ use crate::pages::{
 };
 use axum::{
     extract::Path,
-    http::{header::CONTENT_TYPE, HeaderName},
-    response::Html,
+    http::{header::CONTENT_TYPE, HeaderMap, HeaderValue, StatusCode},
+    response::{Html, Response},
     routing::get,
     Router,
 };
-use std::{env, error::Error};
+use std::{env, error::Error, sync::LazyLock};
 
-fn fetch_xml(url: &str) -> Result<String, Box<dyn Error>> {
-    minreq::get(format!("{}{}", env::var("XML_API")?, url))
-        .send()?
-        .as_str()
-        .map(String::from)
-        .or_else(|_| Err("Failed to read response as string".into()))
+static XML_API_BASE: LazyLock<String> =
+    LazyLock::new(|| env::var("XML_API").expect("Missing XML_API environment variable"));
+
+async fn fetch_xml(path: &str) -> Result<String, Box<dyn Error>> {
+    let url = format!("{}/{}", *XML_API_BASE, path);
+
+    let response = minreq::get(&url).with_timeout(5).send()?;
+
+    if response.status_code != 200 {
+        return Err(format!("HTTP Error: {}", response.status_code).into());
+    }
+
+    response.as_str().map(String::from).map_err(|e| e.into())
 }
 
-fn xml_response(
-    content: Result<String, Box<dyn Error>>,
-) -> ([(HeaderName, &'static str); 1], String) {
-    let content = content.unwrap_or_else(|e| format!("Error: {}", e));
-    ([(CONTENT_TYPE, "application/xml")], content)
+async fn xml_handler(path: &str) -> Result<Response<String>, StatusCode> {
+    let content = fetch_xml(path)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    static CONTENT_TYPE_XML: LazyLock<HeaderValue> =
+        LazyLock::new(|| "application/xml".parse().unwrap());
+
+    let mut headers = HeaderMap::new();
+    headers.insert(CONTENT_TYPE, CONTENT_TYPE_XML.clone());
+
+    Ok(Response::builder()
+        .status(StatusCode::OK)
+        .body(content)
+        .unwrap())
 }
+
 pub fn page_routes(router: Router) -> Router {
     router
         .route("/", get(|| async { Html(home()) }))
@@ -33,6 +51,6 @@ pub fn page_routes(router: Router) -> Router {
             "/blog/{slug}",
             get(|params: Path<String>| async { Html(article(params)) }),
         )
-        .route("/rss.xml", get(xml_response(fetch_xml("rss.xml"))))
-        .route("/sitemap.xml", get(xml_response(fetch_xml("sitemap.xml"))))
+        .route("/rss.xml", get(|| xml_handler("rss.xml")))
+        .route("/sitemap.xml", get(|| xml_handler("sitemap.xml")))
 }
