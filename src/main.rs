@@ -30,7 +30,7 @@ async fn main() {
 
     println!("Listening on {}", listener.local_addr().unwrap());
 
-    let allowed_origins = ["ORIGIN_AP", "ORIGIN_DD"]
+    let allowed_origins = ["AP_BASE_URL", "DD_BASE_URL"]
         .iter()
         .filter_map(|&var| env::var(var).ok())
         .chain(std::iter::once(addr.to_string()))

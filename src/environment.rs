@@ -22,7 +22,7 @@ impl EnvWrapper {
         ];
         let globals = [
             ("current_year", Utc::now().year().to_string()),
-            ("origin_ap", env::var("ORIGIN_AP").unwrap_or_default()),
+            ("AP_BASE_URL", env::var("AP_BASE_URL").unwrap_or_default()),
             (
                 "google_verification",
                 env::var("GOOGLE_VERIFICATION").unwrap_or_default(),

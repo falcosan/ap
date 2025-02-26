@@ -11,11 +11,11 @@ use axum::{
 };
 use std::{env, error::Error, sync::LazyLock};
 
-static DATA_AP_BASE: LazyLock<String> =
-    LazyLock::new(|| env::var("DATA_AP").expect("Missing DATA_AP environment variable"));
+static AP_DATA_BASE: LazyLock<String> =
+    LazyLock::new(|| env::var("AP_DATA").expect("Missing AP_DATA environment variable"));
 
 async fn fetch_xml(path: &str) -> Result<String, Box<dyn Error>> {
-    let url = format!("{}/{}", *DATA_AP_BASE, path);
+    let url = format!("{}/{}", *AP_DATA_BASE, path);
     let response = ureq::get(&url).call()?.body_mut().read_to_string()?;
 
     Ok(response)

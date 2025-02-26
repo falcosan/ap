@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% set article = page.data.content %}
-{% set url = origin_ap ~ page.data.full_slug %}
+{% set url = AP_BASE_URL ~ page.data.full_slug %}
 
 {% macro meta_tag(attribute, value, type="property") %}
 {% if type == "name" %}
