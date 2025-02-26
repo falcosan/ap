@@ -67,7 +67,7 @@ macro_rules! get_data {
 
         let (url, field, filter_value) = match stringify!($param) {
             "slug" => (
-                format!("{}/{}/?token={}", base_url, $value, token),
+                format!("{}/{}?token={}", base_url, $value, token),
                 "story",
                 None,
             ),
@@ -78,10 +78,12 @@ macro_rules! get_data {
             ),
             _ => panic!("Unsupported parameter: {}", stringify!($param)),
         };
-
-        let mut response = ureq::get(&url)
-            .call()
-            .unwrap_or_else(|e| panic!("Failed to send request to {}: {}", url, e));
+        let mut response = match ureq::get(&url).call() {
+            Ok(r) => r,
+            Err(_) => {
+                return crate::environment::ENV.render_template("fallback.html", ());
+            }
+        };
 
         let body = response
             .body_mut()

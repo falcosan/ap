@@ -54,7 +54,7 @@ impl EnvWrapper {
             .or_else(|_| {
                 self.env
                     .get_template("fallback.html")
-                    .and_then(|t| t.render(context!(page => context)))
+                    .and_then(|t| t.render(()))
             })
             .unwrap()
     }
