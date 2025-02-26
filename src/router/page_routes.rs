@@ -5,7 +5,7 @@ use crate::pages::{
 use axum::{
     extract::Path,
     http::{header::CONTENT_TYPE, HeaderMap, HeaderValue, StatusCode},
-    response::{Html, Response},
+    response::{Html, IntoResponse, Response},
     routing::get,
     Router,
 };
@@ -38,14 +38,23 @@ async fn xml_handler(path: &str) -> Result<Response<String>, StatusCode> {
         .unwrap())
 }
 
+async fn home_handler() -> impl IntoResponse {
+    Html(home())
+}
+
+async fn blog_handler() -> impl IntoResponse {
+    Html(blog())
+}
+
+async fn article_handler(slug: Path<String>) -> impl IntoResponse {
+    Html(article(slug))
+}
+
 pub fn page_routes(router: Router) -> Router {
     router
-        .route("/", get(|| async { Html(home()) }))
-        .route("/blog", get(|| async { Html(blog()) }))
-        .route(
-            "/blog/{slug}",
-            get(|params: Path<String>| async { Html(article(params)) }),
-        )
+        .route("/", get(home_handler))
+        .route("/blog", get(blog_handler))
+        .route("/blog/{slug}", get(article_handler))
         .route("/rss.xml", get(|| xml_handler("rss.xml")))
         .route("/sitemap.xml", get(|| xml_handler("sitemap.xml")))
 }
