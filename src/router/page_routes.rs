@@ -9,52 +9,43 @@ use axum::{
     routing::get,
     Router,
 };
-use std::{env, sync::LazyLock};
+use std::{env, error::Error, sync::LazyLock};
 
 static XML_API_BASE: LazyLock<String> =
     LazyLock::new(|| env::var("XML_API").expect("Missing XML_API environment variable"));
 
-static CONTENT_TYPE_XML: LazyLock<HeaderValue> =
-    LazyLock::new(|| HeaderValue::from_static("application/xml"));
-
-async fn fetch_xml(path: &str) -> Result<String, StatusCode> {
+async fn fetch_xml(path: &str) -> Result<String, Box<dyn Error>> {
     let url = format!("{}/{}", *XML_API_BASE, path);
+    let response = ureq::get(&url).call()?.body_mut().read_to_string()?;
 
-    match reqwest::get(&url).await {
-        Ok(response) => match response.text().await {
-            Ok(content) => Ok(content),
-            Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
-        },
-        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
-    }
+    Ok(response)
 }
 
 async fn xml_handler(path: &str) -> Result<Response<String>, StatusCode> {
-    let content = fetch_xml(path).await?;
+    let content = fetch_xml(path)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    static CONTENT_TYPE_XML: LazyLock<HeaderValue> =
+        LazyLock::new(|| "application/xml".parse().unwrap());
 
     let mut headers = HeaderMap::new();
     headers.insert(CONTENT_TYPE, CONTENT_TYPE_XML.clone());
 
-    Response::builder()
+    Ok(Response::builder()
         .status(StatusCode::OK)
         .body(content)
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
+        .unwrap())
 }
 
 pub fn page_routes(router: Router) -> Router {
     router
-        .route("/", get(|| async move { Html(home()) }))
-        .route("/blog", get(|| async move { Html(blog()) }))
+        .route("/", get(|| async { Html(home()) }))
+        .route("/blog", get(|| async { Html(blog()) }))
         .route(
             "/blog/{slug}",
-            get(|slug: Path<String>| async move { Html(article(slug)) }),
+            get(|params: Path<String>| async { Html(article(params)) }),
         )
-        .route(
-            "/rss.xml",
-            get(|| async move { xml_handler("rss.xml").await }),
-        )
-        .route(
-            "/sitemap.xml",
-            get(|| async move { xml_handler("sitemap.xml").await }),
-        )
+        .route("/rss.xml", get(|| xml_handler("rss.xml")))
+        .route("/sitemap.xml", get(|| xml_handler("sitemap.xml")))
 }

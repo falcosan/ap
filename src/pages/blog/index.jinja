@@ -4,17 +4,15 @@
 
 {% block meta %}
 <meta name="description" content="{{ self.title() }}" />
-<link rel="canonical" href="{{ origin_ap ~ page.data.path }}" />
+<link rel="canonical" href="{{ origin_ap ~ 'blog' }}" />
 {% endblock %}
 
 {% block main %}
-{% if page.articles is defined %}
 <ul>
-  {% for article in page.articles %}
+  {% for article in page.data %}
   <li>
     <a href="/{{ article.full_slug }}">{{ article.content.title }}</a>
   </li>
   {% endfor %}
 </ul>
-{% endif %}
 {% endblock %}
