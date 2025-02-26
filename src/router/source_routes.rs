@@ -10,6 +10,10 @@ pub fn source_routes(router: Router) -> Router {
             ServeFile::new(format!("{}/index.css", STATIC_DIST)),
         )
         .route_service(
+            "/robots.txt",
+            ServeFile::new(format!("{}/robots.txt", STATIC_DIST)),
+        )
+        .route_service(
             "/favicon.ico",
             ServeFile::new(format!("{}/favicon.ico", STATIC_DIST)),
         )
