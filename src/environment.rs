@@ -11,7 +11,7 @@ impl EnvWrapper {
     pub fn new() -> Self {
         let mut env = Environment::new();
         let templates = [
-            ("layout.html", include_str!("layout/default.jinja")),
+            ("layout.html", include_str!("layout/index.jinja")),
             ("home.html", include_str!("pages/home/index.jinja")),
             ("blog.html", include_str!("pages/blog/index.jinja")),
             ("fallback.html", include_str!("pages/fallback/index.jinja")),

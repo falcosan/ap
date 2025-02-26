@@ -31,9 +31,9 @@
 {% endblock %}
 
 {% block main %}
-<p><i>{{ article.date|date_format }}</i></p>
+<p><small>{{ article.date|date_format }}</small></p>
 <h1>{{ article.title }}</h1>
-<div style="display:flex;margin-bottom:10px;aspect-ratio:16/10;border-radius:5px;overflow:hidden;">
+<div style="display:flex;margin-bottom:10px;aspect-ratio:16/10;">
   <img src="{{ article.file.filename }}/m/fit-in/720x450/filters:format(webp)"
     alt="{{ article.file.alt or ('image article ' ~ article.title|lower) }}"
     style="width:100%;height:100%;object-fit:cover;background-color:#ffffff33;">
