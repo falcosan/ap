@@ -8,8 +8,10 @@
 {% set image_meta = article.file.filename ~ '/m/fit-in/510x240/filters:format(webp)' %}
 
 {% macro meta_tag(attribute, value, type="property") %}
-{% if value %}
-<meta {% if type=="name" %}name{% else %}property{% endif %}="{{ attribute }}" content="{{ value }}">
+{% if type == "name" %}
+<meta name="{{ attribute }}" content="{{ value }}">
+{% else %}
+<meta property="{{ attribute }}" content="{{ value }}">
 {% endif %}
 {% endmacro %}
 
