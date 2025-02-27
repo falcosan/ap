@@ -34,8 +34,8 @@
 {% block main %}
 <p><small>{{ article.date|date_format }}</small></p>
 <h1>{{ title }}</h1>
-<img src="{{ image }}" alt="{{ img_alt }}" width="720" height="450"
-  style="margin-bottom:10px;aspect-ratio:16/10;object-fit:cover;background-color:#ffffff33;" loading="lazy">
+<img src="{{ image }}" alt="{{ img_alt }}" width="720" height="450" loading="lazy"
+  style="margin-bottom:10px;aspect-ratio:16/10;object-fit:cover;background-color:#ffffff33;">
 <h2>{{ description }}</h2>
 <article>{{ article.long_text|safe }}</article>
 {% endblock %}
