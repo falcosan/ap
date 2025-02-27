@@ -4,8 +4,8 @@
 {% set title = article.title or "AP article" %}
 {% set url = AP_BASE_URL ~ page.data.full_slug %}
 {% set description = article.intro or "AP article" %}
-{% set image_meta = article.file.filename ~ '/m/fit-in/520x250' %}
 {% set image = article.file.filename ~ '/m/fit-in/720x450/filters:format(webp)' %}
+{% set image_meta = article.file.filename ~ '/m/fit-in/510x240/filters:format(webp)' %}
 
 {% macro meta_tag(attribute, value, type="property") %}
 {% if value %}
