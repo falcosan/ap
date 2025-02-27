@@ -1,41 +1,42 @@
 {% extends "layout.html" %}
 
 {% set article = page.data.content %}
+{% set title = article.title or "AP article" %}
 {% set url = AP_BASE_URL ~ page.data.full_slug %}
+{% set description = article.intro or "AP article" %}
+{% set image_meta = article.file.filename ~ '/m/fit-in/520x250' %}
+{% set image = article.file.filename ~ '/m/fit-in/720x450/filters:format(webp)' %}
 
 {% macro meta_tag(attribute, value, type="property") %}
-{% if type == "name" %}
-<meta name="{{ attribute }}" content="{{ value }}">
-{% else %}
-<meta property="{{ attribute }}" content="{{ value }}">
+{% if value %}
+<meta {% if type=="name" %}name{% else %}property{% endif %}="{{ attribute }}" content="{{ value }}">
 {% endif %}
 {% endmacro %}
 
-{% block title %}
-{{ super() }} | {{ article.title or "Article" }}
-{% endblock %}
+{% block title %}{{ super() }} | {{ title }}{% endblock %}
 
 {% block meta %}
-<link rel="canonical" href="{{ url }}" />
+<link rel="canonical" href="{{ url }}">
 
+{{ meta_tag("description", description, "name") }}
+
+{{ meta_tag("og:title", title) }}
+{{ meta_tag("og:description", description) }}
 {{ meta_tag("og:url", url) }}
+{{ meta_tag("og:image", image_meta) }}
 {{ meta_tag("og:type", "article") }}
-{{ meta_tag("og:title", article.title) }}
-{{ meta_tag("twitter:title", article.title) }}
-{{ meta_tag("og:description", article.intro) }}
-{{ meta_tag("og:image", article.file.filename) }}
-{{ meta_tag("twitter:description", article.intro) }}
-{{ meta_tag("description", article.intro, "name") }}
+
 {{ meta_tag("twitter:card", "summary_large_image") }}
-{{ meta_tag("twitter:image", article.file.filename) }}
+{{ meta_tag("twitter:title", title) }}
+{{ meta_tag("twitter:description", description) }}
+{{ meta_tag("twitter:image", image_meta) }}
 {% endblock %}
 
 {% block main %}
 <p><small>{{ article.date|date_format }}</small></p>
 <h1>{{ article.title }}</h1>
 <div style="display:flex;margin-bottom:10px;aspect-ratio:16/10;">
-  <img src="{{ article.file.filename }}/m/fit-in/720x450/filters:format(webp)"
-    alt="{{ article.file.alt or ('image article ' ~ article.title|lower) }}"
+  <img src="{{ image  }}" alt="{{ article.file.alt or ('Image for ' ~ title|lower) }}"
     style="width:100%;height:100%;object-fit:cover;background-color:#ffffff33;">
 </div>
 <h2>{{ article.intro }}</h2>
