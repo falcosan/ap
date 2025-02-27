@@ -35,10 +35,8 @@
 {% block main %}
 <p><small>{{ article.date|date_format }}</small></p>
 <h1>{{ article.title }}</h1>
-<div style="display:flex;margin-bottom:10px;aspect-ratio:16/10;">
-  <img src="{{ image  }}" alt="{{ article.file.alt or ('Image for ' ~ title|lower) }}"
-    style="width:100%;height:100%;object-fit:cover;background-color:#ffffff33;">
-</div>
+<img src="{{ image  }}" alt="{{ article.file.alt or ('Image for ' ~ title|lower) }}" style="background-color:#ffffff33;"
+  width="720" height="450">
 <h2>{{ article.intro }}</h2>
 <article>{{ article.long_text|safe }}</article>
 {% endblock %}
