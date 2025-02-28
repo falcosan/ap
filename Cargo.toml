@@ -9,7 +9,7 @@ repository = "https://github.com/falcosan/ap"
 
 [dependencies]
 axum = "0.8"
-ureq = "3.0.6"
+ureq = "3.0.7"
 minijinja = "2"
 dotenv = "0.15.0"
 chrono = "0.4.40"
