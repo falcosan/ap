@@ -7,14 +7,14 @@ pub fn source_routes(router: Router) -> Router {
     router
         .route_service(
             "/index.css",
-            ServeFile::new(format!("{}/index.css", STATIC_DIST)),
+            ServeFile::new(format!("{STATIC_DIST}/index.css")),
         )
         .route_service(
             "/robots.txt",
-            ServeFile::new(format!("{}/robots.txt", STATIC_DIST)),
+            ServeFile::new(format!("{STATIC_DIST}/robots.txt")),
         )
         .route_service(
             "/favicon.ico",
-            ServeFile::new(format!("{}/favicon.ico", STATIC_DIST)),
+            ServeFile::new(format!("{STATIC_DIST}/favicon.ico")),
         )
 }

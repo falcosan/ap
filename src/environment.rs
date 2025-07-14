@@ -31,7 +31,7 @@ impl EnvWrapper {
 
         for (name, content) in templates {
             env.add_template(name, content)
-                .unwrap_or_else(|_| panic!("Template already exist: {}", name))
+                .unwrap_or_else(|_| panic!("Template already exist: {name}"))
         }
         for (key, value) in globals {
             env.add_global(key, value);
@@ -60,4 +60,4 @@ impl EnvWrapper {
     }
 }
 
-pub static ENV: LazyLock<EnvWrapper> = LazyLock::new(|| EnvWrapper::new());
+pub static ENV: LazyLock<EnvWrapper> = LazyLock::new(EnvWrapper::new);

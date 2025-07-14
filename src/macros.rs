@@ -15,8 +15,8 @@ macro_rules! extract_components {
         let target_name = $name;
         let mut components = Vec::with_capacity(32);
 
-        fn traverse<'a>(
-            value: &'a serde_json::Value,
+        fn traverse(
+            value: &serde_json::Value,
             list: &mut Vec<serde_json::Value>,
             name: &str,
             markdown_buffer: &mut String,
@@ -81,7 +81,7 @@ macro_rules! get_data {
         let mut response = match ureq::get(&url).call() {
             Ok(r) => r,
             Err(_) => {
-                return crate::environment::ENV.render_template("fallback.html", ());
+                return $crate::environment::ENV.render_template("fallback.html", ());
             }
         };
 

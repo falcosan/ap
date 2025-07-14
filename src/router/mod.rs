@@ -16,7 +16,7 @@ async fn redirect_to_root() -> Redirect {
 }
 
 async fn redirect_lang_path(Path(path): Path<String>) -> Redirect {
-    Redirect::permanent(&format!("/{}", path))
+    Redirect::permanent(&format!("/{path}"))
 }
 
 pub fn router() -> Router {
