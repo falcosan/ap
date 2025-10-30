@@ -18,8 +18,9 @@
 <body>
   <header>
     <nav aria-label="Main Navigation">
-      <a href="/">Home</a>
-      <a href="/blog">Blog</a>
+      <a href="/" {% if current_path=="/" %}class="activate" {% endif %}>Home</a>
+      <a href="/blog" {% if current_path=="/blog" or (current_path | startswith("/blog/")) %}class="activate" {% endif
+        %}>Blog</a>
     </nav>
   </header>
 
