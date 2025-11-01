@@ -4,11 +4,14 @@
 {% set title = article.title or "article" %}
 {% set url = AP_BASE_URL ~ page.data.full_slug %}
 {% set description = article.intro or "article" %}
+
+{% if article.file %}
 {% set image_params = '/m/fit-in/720x450/filters:format(webp)' %}
 {% set image_meta_params = '/m/fit-in/510x240/filters:format(webp)' %}
 {% set image = article.file.filename ~ image_params %}
 {% set image_meta = article.file.filename ~ image_meta_params %}
 {% set img_alt = article.file.alt or ('Image for ' ~ title|lower) %}
+{% endif %}
 
 {% macro meta_tag(attribute, value, type="property") -%}
 <meta {{ type }}="{{ attribute }}" content="{{ value }}">
@@ -23,19 +26,24 @@
 <meta property="og:title" content="{{ title }}">
 <meta property="og:description" content="{{ description }}">
 <meta property="og:url" content="{{ url }}">
+{% if article.file %}
 <meta property="og:image" content="{{ image_meta }}">
+{% endif %}
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ title }}">
 <meta name="twitter:description" content="{{ description }}">
+{% if article.file %}
 <meta name="twitter:image" content="{{ image_meta }}">
+{% endif %}
 {% endblock %}
 
 {% block main %}
-<p><small>{{ article.date|date_format }}</small></p>
+<time datetime="{{ article.date|date_format }}"><small>{{ article.date|date_format }}</small></time>
 <h1>{{ title }}</h1>
-<img src="{{ image }}" alt="{{ img_alt }}" width="720" height="450" loading="lazy"
-  style="margin-bottom:10px;aspect-ratio:16/10;object-fit:cover;background-color:#ffffff33;">
+{% if article.file %}
+<img src="{{ image }}" alt="{{ img_alt }}" width="720" height="450" loading="lazy">
+{% endif %}
 <h2>{{ description }}</h2>
 <article>{{ article.long_text|safe }}</article>
 {% endblock %}
