@@ -18,7 +18,7 @@ pulldown-cmark = "0.13"
 ureq = { version = "3", features = ["json"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0.228", features = ["derive"] }
-tower-http = { version = "0.6.6", features = ["fs", "cors", "normalize-path"] }
+tower-http = { version = "0.6.7", features = ["fs", "cors", "normalize-path"] }
 
 [profile.release]
 lto = true
