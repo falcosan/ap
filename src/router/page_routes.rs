@@ -37,7 +37,7 @@ async fn blog_handler(uri: Uri) -> impl IntoResponse {
 }
 
 async fn article_handler(uri: Uri, Path(slug): Path<String>) -> impl IntoResponse {
-    Html(article(uri.path(), Path(slug)))
+    Html(article(uri.path(), slug.as_str()))
 }
 
 pub fn page_routes(router: Router) -> Router {
