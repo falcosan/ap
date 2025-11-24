@@ -1,16 +1,8 @@
-use crate::environment::ENV;
-use serde::Serialize;
-
-#[derive(Serialize)]
-struct PageContext<T> {
-    data: T,
-    current_path: String,
-}
+use crate::environment::{ PageContext, ENV };
 
 pub fn home(current_path: &str) -> String {
-    let context = PageContext {
+    ENV.render_template("home.html", PageContext {
         data: extract_components!(&get_data!({ slug: "home" }), "TextContent"),
         current_path: current_path.to_string(),
-    };
-    ENV.render_template("home.html", context)
+    })
 }

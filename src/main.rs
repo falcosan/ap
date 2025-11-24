@@ -1,12 +1,13 @@
-use axum::{extract::Request, http::Method, ServiceExt};
-use std::{env, net::SocketAddr};
-use tokio::net::TcpListener;
-use tower_http::{cors::CorsLayer, normalize_path::NormalizePathLayer};
 use tower_layer::Layer;
+use tokio::net::TcpListener;
+use std::{ env, net::SocketAddr };
+use axum::{ extract::Request, http::Method, ServiceExt };
+use tower_http::{ cors::CorsLayer, normalize_path::NormalizePathLayer };
 
 #[macro_use]
 mod macros;
 mod environment;
+mod http;
 mod router;
 mod pages {
     export!(home);
@@ -18,15 +19,14 @@ mod pages {
 async fn main() {
     dotenv::dotenv().ok();
 
-    let port = env::var("PORT")
+    let port = env
+        ::var("PORT")
         .ok()
         .and_then(|p| p.parse().ok())
         .unwrap_or(8000);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
-    let listener = TcpListener::bind(addr)
-        .await
-        .expect("Failed to bind to address");
+    let listener = TcpListener::bind(addr).await.expect("Failed to bind to address");
 
     println!("Listening on {}", listener.local_addr().unwrap());
 
@@ -39,12 +39,10 @@ async fn main() {
 
     let app = ServiceExt::<Request>::into_make_service(
         NormalizePathLayer::trim_trailing_slash().layer(
-            router::router().layer(
-                CorsLayer::new()
-                    .allow_methods([Method::GET])
-                    .allow_origin(allowed_origins),
-            ),
-        ),
+            router
+                ::router()
+                .layer(CorsLayer::new().allow_methods([Method::GET]).allow_origin(allowed_origins))
+        )
     );
 
     axum::serve(listener, app).await.expect("Server error");

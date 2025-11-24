@@ -1,58 +1,57 @@
 #[macro_export]
 macro_rules! export {
-  ($($module:ident),+) => {
-      $(
-          pub mod $module;
-          #[allow(unused_imports)]
-          pub use $module::$module;
-      )+
-  };
+    ($($module:ident),+) => {
+        $(
+            pub mod $module;
+            #[allow(unused_imports)]
+            pub use $module::$module;
+        )+
+    };
 }
 
 #[macro_export]
 macro_rules! extract_components {
     ($data:expr, $name:expr) => {{
-        let target_name = $name;
-        let mut components = Vec::with_capacity(32);
+        use pulldown_cmark::{html, Parser};
+        use serde_json::{json, Map, Value};
 
-        fn traverse(
-            value: &serde_json::Value,
-            list: &mut Vec<serde_json::Value>,
-            name: &str,
-            markdown_buffer: &mut String,
-        ) {
-            if let serde_json::Value::Object(obj) = value {
-                if let Some(component) = obj.get("component") {
-                    if component == name {
+        fn traverse(value: &Value, list: &mut Vec<Value>, name: &str, buf: &mut String) {
+            match value {
+                Value::Object(obj) => {
+                    if obj.get("component").map(|c| c == name).unwrap_or(false) {
                         if name == "TextContent" {
                             if let Some(text) = obj.get("text").and_then(|t| t.as_str()) {
-                                markdown_buffer.clear();
-                                let parser = pulldown_cmark::Parser::new(text);
-                                pulldown_cmark::html::push_html(markdown_buffer, parser);
-                                let mut new_obj = obj.clone();
-                                new_obj.insert(
-                                    "text".to_string(),
-                                    serde_json::Value::String(markdown_buffer.clone()),
-                                );
-                                list.push(serde_json::Value::Object(new_obj));
+                                buf.clear();
+                                html::push_html(buf, Parser::new(text));
+                                let mut new_obj = Map::with_capacity(obj.len());
+                                for (k, v) in obj {
+                                    new_obj.insert(
+                                        k.clone(),
+                                        if k == "text" { json!(buf.as_str()) } else { v.clone() },
+                                    );
+                                }
+                                list.push(Value::Object(new_obj));
                             }
                         } else {
                             list.push(value.clone());
                         }
                     }
+                    for v in obj.values() {
+                        traverse(v, list, name, buf);
+                    }
                 }
-                for v in obj.values() {
-                    traverse(v, list, name, markdown_buffer);
+                Value::Array(arr) => {
+                    for item in arr {
+                        traverse(item, list, name, buf);
+                    }
                 }
-            } else if let serde_json::Value::Array(arr) = value {
-                for item in arr {
-                    traverse(item, list, name, markdown_buffer);
-                }
+                _ => {}
             }
         }
 
-        let mut markdown_buffer = String::with_capacity(1024);
-        traverse($data, &mut components, target_name, &mut markdown_buffer);
+        let mut components = Vec::with_capacity(32);
+        let mut buf = String::with_capacity(4096);
+        traverse($data, &mut components, $name, &mut buf);
         components
     }};
 }
@@ -60,55 +59,49 @@ macro_rules! extract_components {
 #[macro_export]
 macro_rules! get_data {
     ({ $param:ident: $value:expr }) => {{
-        let token = std::env::var("ST_TOKEN")
-            .unwrap_or_else(|_| panic!("ST_TOKEN environment variable not set"));
-        let base_url = std::env::var("ST_BASE_URL")
-            .unwrap_or_else(|_| panic!("ST_BASE_URL environment variable not set"));
+        use serde_json::Value;
+        use std::sync::LazyLock;
 
-        let (url, field, filter_value) = match stringify!($param) {
+        static ST_TOKEN: LazyLock<String> =
+            LazyLock::new(|| std::env::var("ST_TOKEN").expect("ST_TOKEN not set"));
+        static ST_BASE_URL: LazyLock<String> =
+            LazyLock::new(|| std::env::var("ST_BASE_URL").expect("ST_BASE_URL not set"));
+
+        let value_str: String = $value.into();
+        let (url, field, filter) = match stringify!($param) {
             "slug" => (
-                format!("{}/{}?token={}", base_url, $value, token),
+                format!("{}/{}?token={}", *ST_BASE_URL, value_str, *ST_TOKEN),
                 "story",
                 None,
             ),
             "starts_with" => (
-                format!("{}?starts_with={}&token={}", base_url, $value, token),
+                format!("{}?starts_with={}&token={}", *ST_BASE_URL, value_str, *ST_TOKEN),
                 "stories",
-                Some($value),
+                Some(value_str),
             ),
             _ => panic!("Unsupported parameter: {}", stringify!($param)),
         };
-        let mut response = match ureq::get(&url).call() {
-            Ok(r) => r,
-            Err(_) => {
-                return $crate::environment::ENV.render_template("fallback.html", ());
+
+        match $crate::http::AGENT
+            .get(&url)
+            .call()
+            .ok()
+            .and_then(|r| r.into_body().read_json::<Value>().ok())
+        {
+            Some(json) => {
+                let mut data = json.get(field).cloned().unwrap_or(Value::Array(vec![]));
+                if let (Some(f), Value::Array(arr)) = (&filter, &mut data) {
+                    let slug = format!("{}/", f);
+                    arr.retain(|i| {
+                        i.get("full_slug")
+                            .and_then(|s| s.as_str())
+                            .map(|s| s != slug)
+                            .unwrap_or(false)
+                    });
+                }
+                data
             }
-        };
-
-        let body = response
-            .body_mut()
-            .read_to_string()
-            .unwrap_or_else(|_| panic!("Failed to read response body"));
-
-        let json: serde_json::Value = serde_json::from_str(&body)
-            .unwrap_or_else(|_| panic!("Failed to parse JSON from {}", url));
-
-        let mut data = match json.get(field) {
-            Some(value) => value.clone(),
-            None => serde_json::Value::Array(vec![]),
-        };
-
-        if let Some(filter_value) = filter_value {
-            if let serde_json::Value::Array(ref mut arr) = data {
-                arr.retain(|item| {
-                    item.get("full_slug")
-                        .and_then(|slug| slug.as_str())
-                        .map(|slug| slug != &format!("{}/", filter_value))
-                        .unwrap_or(false)
-                });
-            }
+            None => return $crate::environment::ENV.render_template("fallback.html", ()),
         }
-
-        data
     }};
 }

@@ -1,35 +1,31 @@
-use crate::pages::{ blog::{ article, blog }, home };
+use crate::http::AGENT;
+use std::{ env, sync::LazyLock };
 use axum::{
-    extract::Path,
-    http::{ header::CONTENT_TYPE, HeaderMap, HeaderValue, StatusCode, Uri },
-    response::{ Html, IntoResponse, Response },
-    routing::get,
     Router,
+    routing::get,
+    extract::Path,
+    response::{ Html, IntoResponse, Response },
+    http::{ header::CONTENT_TYPE, StatusCode, Uri },
 };
-use std::{ env, error::Error, sync::LazyLock };
+use crate::pages::{ blog::{ article, blog }, home };
 
-static AP_DATA_BASE: LazyLock<String> = LazyLock::new(||
-    env::var("AP_DATA").expect("Missing AP_DATA environment variable")
-);
+static AP_DATA: LazyLock<String> = LazyLock::new(|| env::var("AP_DATA").expect("AP_DATA not set"));
 
-async fn fetch_xml(path: &str) -> Result<String, Box<dyn Error>> {
-    let url = format!("{}/{}", *AP_DATA_BASE, path);
-    let response = ureq::get(&url).call()?.body_mut().read_to_string()?;
-
-    Ok(response)
+fn fetch_xml(path: &str) -> Result<String, StatusCode> {
+    AGENT.get(&format!("{}/{}", *AP_DATA, path))
+        .call()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+        .into_body()
+        .read_to_string()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
 
 async fn xml_handler(path: &str) -> Result<Response<String>, StatusCode> {
-    let content = fetch_xml(path).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    static CONTENT_TYPE_XML: LazyLock<HeaderValue> = LazyLock::new(||
-        "application/xml".parse().unwrap()
-    );
-
-    let mut headers = HeaderMap::new();
-    headers.insert(CONTENT_TYPE, CONTENT_TYPE_XML.clone());
-
-    Ok(Response::builder().status(StatusCode::OK).body(content).unwrap())
+    Response::builder()
+        .status(StatusCode::OK)
+        .header(CONTENT_TYPE, "application/xml")
+        .body(fetch_xml(path)?)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
 
 async fn home_handler(uri: Uri) -> impl IntoResponse {
@@ -40,8 +36,8 @@ async fn blog_handler(uri: Uri) -> impl IntoResponse {
     Html(blog(uri.path()))
 }
 
-async fn article_handler(uri: Uri, slug: Path<String>) -> impl IntoResponse {
-    Html(article(uri.path(), slug))
+async fn article_handler(uri: Uri, Path(slug): Path<String>) -> impl IntoResponse {
+    Html(article(uri.path(), Path(slug)))
 }
 
 pub fn page_routes(router: Router) -> Router {
