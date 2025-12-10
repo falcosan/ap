@@ -1,5 +1,6 @@
 use crate::http::AGENT;
 use std::{ env, sync::LazyLock };
+use html_to_markdown_rs::convert;
 use axum::{
     Router,
     routing::get,
@@ -21,10 +22,20 @@ fn fetch_xml(path: &str) -> Result<String, StatusCode> {
 }
 
 async fn xml_handler(path: &str) -> Result<Response<String>, StatusCode> {
+    let body = fetch_xml(path)?;
     Response::builder()
         .status(StatusCode::OK)
         .header(CONTENT_TYPE, "application/xml")
-        .body(fetch_xml(path)?)
+        .body(body)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
+}
+
+async fn md_handler(path: &str) -> Result<Response<String>, StatusCode> {
+    let body = convert(&fetch_xml(path)?, None).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    Response::builder()
+        .status(StatusCode::OK)
+        .header(CONTENT_TYPE, "text/markdown; charset=utf-8")
+        .body(body)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
 
@@ -48,6 +59,10 @@ pub fn page_routes(router: Router) -> Router {
         .route(
             "/rss.xml",
             get(|| xml_handler("rss.xml"))
+        )
+        .route(
+            "/llms.txt",
+            get(|| md_handler("llms.txt"))
         )
         .route(
             "/sitemap.xml",
