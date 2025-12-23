@@ -15,7 +15,7 @@ dotenv = "0.15.0"
 chrono = "0.4.42"
 tower-layer = "0.3"
 pulldown-cmark = "0.13"
-html-to-markdown-rs = "2.14"
+html-to-markdown-rs = "2.16"
 ureq = { version = "3", features = ["json"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0.228", features = ["derive"] }
