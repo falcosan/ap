@@ -63,9 +63,9 @@ fn get_stories(prefix: &str) -> Value {
 }
 
 async fn llms_handler() -> Result<Response<String>, StatusCode> {
-    let base = env::var("AP_BASE_URL").unwrap_or_default();
-    let home = get_story("home").ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
     let blog = get_stories("blog");
+    let home = get_story("home").ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
+    let base = env::var("AP_BASE_URL").unwrap_or_default().trim_end_matches('/').to_string();
     let mut body = format!("# Aprograma\n\n{}\n\n## Blog\n\n", extract_text(&home));
 
     if let Value::Array(arr) = &blog {
