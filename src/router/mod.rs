@@ -4,25 +4,21 @@ mod source_routes;
 use crate::pages::fallback;
 use axum::{ extract::Path, response::{ Html, Redirect }, routing::get, Router };
 
+async fn lang_redirect(path: Option<Path<String>>) -> Redirect {
+    Redirect::permanent(&path.map(|Path(p)| format!("/{p}")).unwrap_or("/".into()))
+}
+
 pub fn router() -> Router {
-    Router::new()
-        .merge(source_routes::source_routes(Router::new()))
-        .merge(page_routes::page_routes(Router::new()))
-        .route(
-            "/it",
-            get(|| async { Redirect::permanent("/") })
-        )
-        .route(
-            "/es",
-            get(|| async { Redirect::permanent("/") })
-        )
-        .route(
-            "/it/{*path}",
-            get(|Path(p): Path<String>| async move { Redirect::permanent(&format!("/{p}")) })
-        )
-        .route(
-            "/es/{*path}",
-            get(|Path(p): Path<String>| async move { Redirect::permanent(&format!("/{p}")) })
-        )
-        .fallback(Html(fallback()))
+    let mut r = Router::new()
+        .merge(source_routes::source_routes())
+        .merge(page_routes::page_routes());
+    for lang in ["it", "es"] {
+        r = r
+            .route(
+                &format!("/{lang}"),
+                get(|| lang_redirect(None))
+            )
+            .route(&format!("/{lang}/{{*path}}"), get(lang_redirect));
+    }
+    r.fallback(Html(fallback()))
 }

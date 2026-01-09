@@ -1,4 +1,4 @@
-use crate::http::AGENT;
+use crate::http::{ AGENT, ST_TOKEN, ST_BASE_URL };
 use std::{ env, sync::LazyLock };
 use serde_json::Value;
 use axum::{
@@ -11,23 +11,6 @@ use axum::{
 use crate::pages::{ blog::{ article, blog }, home };
 
 static AP_DATA: LazyLock<String> = LazyLock::new(|| env::var("AP_DATA").expect("AP_DATA not set"));
-static ST_TOKEN: LazyLock<String> = LazyLock::new(|| env::var("ST_TOKEN").unwrap_or_default());
-static ST_BASE_URL: LazyLock<String> = LazyLock::new(||
-    env::var("ST_BASE_URL").unwrap_or_default()
-);
-
-fn fetch_xml(path: &str) -> Result<String, StatusCode> {
-    AGENT.get(&format!("{}/{}", *AP_DATA, path))
-        .call()
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-        .into_body()
-        .read_to_string()
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
-}
-
-fn fetch_json(url: &str) -> Option<Value> {
-    AGENT.get(url).call().ok()?.into_body().read_json().ok()
-}
 
 fn extract_text(v: &Value) -> String {
     match v {
@@ -60,13 +43,21 @@ fn extract_text(v: &Value) -> String {
 }
 
 fn get_story(slug: &str) -> Option<Value> {
-    fetch_json(&format!("{}/{}?token={}", *ST_BASE_URL, slug, *ST_TOKEN)).and_then(|j|
-        j.get("story").cloned()
-    )
+    AGENT.get(&format!("{}/{}?token={}", *ST_BASE_URL, slug, *ST_TOKEN))
+        .call()
+        .ok()?
+        .into_body()
+        .read_json::<Value>()
+        .ok()?
+        .get("story")
+        .cloned()
 }
 
 fn get_stories(prefix: &str) -> Value {
-    fetch_json(&format!("{}?starts_with={}&token={}", *ST_BASE_URL, prefix, *ST_TOKEN))
+    AGENT.get(&format!("{}?starts_with={}&token={}", *ST_BASE_URL, prefix, *ST_TOKEN))
+        .call()
+        .ok()
+        .and_then(|r| r.into_body().read_json::<Value>().ok())
         .and_then(|j| j.get("stories").cloned())
         .unwrap_or(Value::Array(vec![]))
 }
@@ -75,38 +66,37 @@ async fn llms_handler() -> Result<Response<String>, StatusCode> {
     let base = env::var("AP_BASE_URL").unwrap_or_default();
     let home = get_story("home").ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
     let blog = get_stories("blog");
-    let mut body = format!("# {}\n\n{}\n\n", "Aprograma", extract_text(&home));
+    let mut body = format!("# Aprograma\n\n{}\n\n## Blog\n\n", extract_text(&home));
 
-    if let Value::Array(articles) = &blog {
-        let items: Vec<_> = articles
+    if let Value::Array(arr) = &blog {
+        for a in arr
             .iter()
-            .filter(|a| a.get("full_slug").and_then(|s| s.as_str()) != Some("blog/"))
-            .filter_map(|a|
-                Some((a.get("full_slug")?.as_str()?, a.pointer("/content/title")?.as_str()?))
-            )
-            .collect();
-        if let Some((slug, _)) = items.first() {
-            if let Some(s) = slug.split('/').next() {
-                body.push_str(&format!("## {}{}\n\n", s[..1].to_uppercase(), &s[1..]));
+            .filter(|a| a.get("full_slug").and_then(|s| s.as_str()) != Some("blog/")) {
+            if
+                let (Some(slug), Some(title)) = (
+                    a.get("full_slug").and_then(|s| s.as_str()),
+                    a.pointer("/content/title").and_then(|s| s.as_str()),
+                )
+            {
+                body.push_str(&format!("- [{title}]({base}/{slug}.md)\n"));
             }
-        }
-        for (slug, title) in items {
-            body.push_str(&format!("- [{}]({}{}.md)\n", title, base, slug));
         }
     }
 
     Response::builder()
-        .status(StatusCode::OK)
         .header(CONTENT_TYPE, "text/markdown; charset=utf-8")
         .body(body)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
 
 async fn xml_handler(uri: Uri) -> Result<Response<String>, StatusCode> {
-    let path = uri.path().trim_start_matches('/');
-    let body = fetch_xml(path)?;
+    let body = AGENT.get(&format!("{}/{}", *AP_DATA, uri.path().trim_start_matches('/')))
+        .call()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+        .into_body()
+        .read_to_string()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     Response::builder()
-        .status(StatusCode::OK)
         .header(CONTENT_TYPE, "application/xml")
         .body(body)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
@@ -124,8 +114,8 @@ async fn article_handler(uri: Uri, Path(slug): Path<String>) -> impl IntoRespons
     Html(article(uri.path(), slug.as_str()))
 }
 
-pub fn page_routes(router: Router) -> Router {
-    router
+pub fn page_routes() -> Router {
+    Router::new()
         .route("/", get(home_handler))
         .route("/blog", get(blog_handler))
         .route("/blog/{slug}", get(article_handler))

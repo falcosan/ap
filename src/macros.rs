@@ -11,7 +11,8 @@ macro_rules! export {
 
 #[macro_export]
 macro_rules! extract_components {
-    ($data:expr, $name:expr) => {{
+    ($data:expr, $name:expr) => {
+        {
         use pulldown_cmark::{html, Parser};
         use serde_json::{json, Map, Value};
 
@@ -53,19 +54,16 @@ macro_rules! extract_components {
         let mut buf = String::with_capacity(4096);
         traverse($data, &mut components, $name, &mut buf);
         components
-    }};
+        }
+    };
 }
 
 #[macro_export]
 macro_rules! get_data {
-    ({ $param:ident: $value:expr }) => {{
+    ({ $param:ident: $value:expr }) => {
+        {
         use serde_json::Value;
-        use std::sync::LazyLock;
-
-        static ST_TOKEN: LazyLock<String> =
-            LazyLock::new(|| std::env::var("ST_TOKEN").expect("ST_TOKEN not set"));
-        static ST_BASE_URL: LazyLock<String> =
-            LazyLock::new(|| std::env::var("ST_BASE_URL").expect("ST_BASE_URL not set"));
+        use $crate::http::{ AGENT, ST_TOKEN, ST_BASE_URL };
 
         let value_str: String = $value.into();
         let (url, field, filter) = match stringify!($param) {
@@ -82,7 +80,7 @@ macro_rules! get_data {
             _ => panic!("Unsupported parameter: {}", stringify!($param)),
         };
 
-        match $crate::http::AGENT
+        match AGENT
             .get(&url)
             .call()
             .ok()
@@ -103,5 +101,6 @@ macro_rules! get_data {
             }
             None => return $crate::environment::ENV.render_template("fallback.html", ()),
         }
-    }};
+        }
+    };
 }
