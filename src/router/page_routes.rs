@@ -78,7 +78,7 @@ async fn llms_handler() -> Result<Response<String>, StatusCode> {
                     a.pointer("/content/title").and_then(|s| s.as_str()),
                 )
             {
-                body.push_str(&format!("- [{title}]({base}/{slug}.md)\n"));
+                body.push_str(&format!("- [{title}]({base}/{slug})\n"));
             }
         }
     }
