@@ -90,6 +90,10 @@ fn jstr<'a>(v: &'a Value, ptr: &str) -> &'a str {
     v.pointer(ptr).and_then(|v| v.as_str()).unwrap_or("")
 }
 
+fn jhtml(v: &Value, ptr: &str) -> String {
+    htmd::convert(jstr(v, ptr)).unwrap_or_default()
+}
+
 fn blog_articles() -> impl Iterator<Item = Value> {
     stories("blog")
         .into_iter()
@@ -164,10 +168,10 @@ async fn article_handler(
     if let Some(s) = slug.strip_suffix(".md") {
         let st = story(&format!("blog/{s}")).ok_or(StatusCode::NOT_FOUND)?;
         return md(format!(
-            "# {}\n\n{}\n\n{}",
+            "# {}\n\n## {}\n\n{}",
             jstr(&st, "/content/title"),
             jstr(&st, "/content/intro"),
-            jstr(&st, "/content/long_text")
+            jhtml(&st, "/content/long_text")
         ));
     }
     html(article(uri.path(), &slug))
