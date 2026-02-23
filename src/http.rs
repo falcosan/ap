@@ -85,6 +85,29 @@ pub fn jhtml(v: &Value, ptr: &str) -> String {
     htmd::convert(jstr(v, ptr)).unwrap_or_default()
 }
 
+pub fn md(body: String) -> Result<Response<String>, StatusCode> {
+    Response::builder()
+        .header(CONTENT_TYPE, "text/markdown; charset=utf-8")
+        .header("Vary", "Accept")
+        .body(body)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
+}
+
+pub fn html(body: String) -> Result<Response<String>, StatusCode> {
+    Response::builder()
+        .header(CONTENT_TYPE, "text/html; charset=utf-8")
+        .header("Vary", "Accept")
+        .body(body)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
+}
+
+pub fn wants_markdown(headers: &HeaderMap) -> bool {
+    headers
+        .get(ACCEPT)
+        .and_then(|v| v.to_str().ok())
+        .is_some_and(|v| v.to_ascii_lowercase().contains("text/markdown"))
+}
+
 pub fn blog_articles() -> impl Iterator<Item = Value> {
     stories("blog")
         .into_iter()
@@ -133,29 +156,6 @@ pub fn article_md_content(slug: &str) -> Option<String> {
         jstr(&st, "/content/intro"),
         jhtml(&st, "/content/long_text")
     ))
-}
-
-pub fn md(body: String) -> Result<Response<String>, StatusCode> {
-    Response::builder()
-        .header(CONTENT_TYPE, "text/markdown; charset=utf-8")
-        .header("Vary", "Accept")
-        .body(body)
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
-}
-
-pub fn html(body: String) -> Result<Response<String>, StatusCode> {
-    Response::builder()
-        .header(CONTENT_TYPE, "text/html; charset=utf-8")
-        .header("Vary", "Accept")
-        .body(body)
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
-}
-
-pub fn wants_markdown(headers: &HeaderMap) -> bool {
-    headers
-        .get(ACCEPT)
-        .and_then(|v| v.to_str().ok())
-        .is_some_and(|v| v.to_ascii_lowercase().contains("text/markdown"))
 }
 
 pub fn xml_content(path: &str) -> Option<String> {
