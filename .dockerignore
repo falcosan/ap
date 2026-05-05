@@ -1,0 +1,17 @@
+**/.git
+**/.gitignore
+**/.env
+**/.env.*
+**/.DS_Store
+**/.vscode
+**/.idea
+**/node_modules
+target
+build
+update
+Dockerfile
+.dockerignore
+README.md
+*.md
+LICENSE
+**/*.log

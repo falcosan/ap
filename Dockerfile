@@ -1,16 +1,28 @@
 # syntax=docker/dockerfile:1.7
+
 FROM rust:1-slim-bookworm AS builder
 WORKDIR /app
+ENV CARGO_TERM_COLOR=always \
+    CARGO_NET_RETRY=10 \
+    RUSTFLAGS="-C strip=symbols"
+
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
-RUN cargo build --release
 
-FROM debian:bookworm-slim
+RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git \
+    --mount=type=cache,id=ap-target,target=/app/target,sharing=locked \
+    cargo build --release --locked && \
+    cp /app/target/release/ap /usr/local/bin/ap
+
+FROM gcr.io/distroless/cc-debian12:nonroot
 WORKDIR /app
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /app/target/release/ap /app/ap
-COPY src/static ./src/static
-ENV PORT=8080
+COPY --from=builder --chown=nonroot:nonroot /usr/local/bin/ap /app/ap
+COPY --chown=nonroot:nonroot src/static ./src/static
+
+USER nonroot
+ENV PORT=8080 \
+    RUST_LOG=info \
+    RUST_BACKTRACE=1
 EXPOSE 8080
-CMD ["/app/ap"]
+ENTRYPOINT ["/app/ap"]
