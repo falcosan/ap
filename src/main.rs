@@ -1,7 +1,9 @@
 use axum::{extract::Request, http::Method, ServiceExt};
 use std::{env, net::SocketAddr};
 use tokio::net::TcpListener;
-use tower_http::{cors::CorsLayer, normalize_path::NormalizePathLayer};
+use tower_http::{
+    compression::CompressionLayer, cors::CorsLayer, normalize_path::NormalizePathLayer,
+};
 use tower_layer::Layer;
 
 #[macro_use]
@@ -40,11 +42,13 @@ async fn main() {
 
     let app = ServiceExt::<Request>::into_make_service(
         NormalizePathLayer::trim_trailing_slash().layer(
-            router::router().layer(
-                CorsLayer::new()
-                    .allow_methods([Method::GET])
-                    .allow_origin(allowed_origins),
-            ),
+            router::router()
+                .layer(
+                    CorsLayer::new()
+                        .allow_methods([Method::GET])
+                        .allow_origin(allowed_origins),
+                )
+                .layer(CompressionLayer::new()),
         ),
     );
 

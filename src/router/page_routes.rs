@@ -15,25 +15,31 @@ use axum::{
 };
 
 async fn llms_handler() -> Result<Response<String>, StatusCode> {
-    md(llms_content().ok_or(StatusCode::INTERNAL_SERVER_ERROR)?)
+    md(llms_content()
+        .await
+        .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?)
 }
 
 async fn home_handler(uri: Uri, headers: HeaderMap) -> Result<Response<String>, StatusCode> {
     if wants_markdown(&headers) {
-        return md(home_md_content().ok_or(StatusCode::INTERNAL_SERVER_ERROR)?);
+        return md(home_md_content()
+            .await
+            .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?);
     }
-    html(home(uri.path()))
+    html(home(uri.path()).await)
 }
 
 async fn blog_handler(uri: Uri, headers: HeaderMap) -> Result<Response<String>, StatusCode> {
     if wants_markdown(&headers) {
-        return md(blog_md_content());
+        return md(blog_md_content().await);
     }
-    html(blog(uri.path()))
+    html(blog(uri.path()).await)
 }
 
 async fn xml_handler(uri: Uri) -> Result<Response<String>, StatusCode> {
-    let body = xml_content(uri.path()).ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
+    let body = xml_content(uri.path())
+        .await
+        .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
     Response::builder()
         .header(CONTENT_TYPE, "application/xml")
         .body(body)
@@ -41,11 +47,13 @@ async fn xml_handler(uri: Uri) -> Result<Response<String>, StatusCode> {
 }
 
 async fn home_md() -> Result<Response<String>, StatusCode> {
-    md(home_md_content().ok_or(StatusCode::INTERNAL_SERVER_ERROR)?)
+    md(home_md_content()
+        .await
+        .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?)
 }
 
 async fn blog_md() -> Result<Response<String>, StatusCode> {
-    md(blog_md_content())
+    md(blog_md_content().await)
 }
 
 async fn article_handler(
@@ -58,9 +66,11 @@ async fn article_handler(
         None => (slug.as_str(), wants_markdown(&headers)),
     };
     if as_md {
-        return md(article_md_content(bare).ok_or(StatusCode::NOT_FOUND)?);
+        return md(article_md_content(bare)
+            .await
+            .ok_or(StatusCode::NOT_FOUND)?);
     }
-    html(article(uri.path(), &slug))
+    html(article(uri.path(), &slug).await)
 }
 
 pub fn page_routes() -> Router {
