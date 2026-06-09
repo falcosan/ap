@@ -18,7 +18,7 @@ minijinja = { version = "2", features = ["speedups"] }
 pulldown-cmark = { version = "0.13", features = ["simd"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0.228", features = ["derive"] }
-reqwest = { version = "0.12", default-features = false, features = [
+reqwest = { version = "0.13", default-features = false, features = [
   "json",
   "rustls-tls",
   "http2",
