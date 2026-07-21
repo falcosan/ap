@@ -17,7 +17,7 @@ tower-layer = "0.3"
 minijinja = { version = "2", features = ["speedups"] }
 pulldown-cmark = { version = "0.13", features = ["simd"] }
 tokio = { version = "1", features = ["full"] }
-serde = { version = "1.0.228", features = ["derive"] }
+serde = { version = "1.0.229", features = ["derive"] }
 reqwest = { version = "0.13.4", default-features = false, features = [
   "json",
   "rustls",
