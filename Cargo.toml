@@ -18,14 +18,14 @@ minijinja = { version = "2", features = ["speedups"] }
 pulldown-cmark = { version = "0.13", features = ["simd"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0.229", features = ["derive"] }
-reqwest = { version = "0.13.4", default-features = false, features = [
+reqwest = { version = "0.13.5", default-features = false, features = [
   "json",
   "rustls",
   "http2",
   "gzip",
   "brotli",
 ] }
-tower-http = { version = "0.7.0", features = [
+tower-http = { version = "0.7.1", features = [
   "fs",
   "cors",
   "normalize-path",
