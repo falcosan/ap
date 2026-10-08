@@ -1,7 +1,7 @@
 [package]
 name = "ap"
 version = "1.0.0"
-edition = "2021"
+edition = "2024"
 description = "ap"
 authors = ["Daniele Falchetti <danielefalche@gmail.com>"]
 license = "MIT"
@@ -11,13 +11,14 @@ repository = "https://github.com/falcosan/ap"
 htmd = "0.5"
 axum = "0.8"
 serde_json = "1"
-dotenv = "0.15.0"
+serde = "1.0.229"
 chrono = "0.4.45"
+dotenvy = "0.15.7"
+tracing = "0.1.44"
 tower-layer = "0.3"
-minijinja = { version = "2", features = ["speedups"] }
-pulldown-cmark = { version = "0.13", features = ["simd"] }
 tokio = { version = "1", features = ["full"] }
-serde = { version = "1.0.229", features = ["derive"] }
+pulldown-cmark = { version = "0.13", features = ["simd"] }
+minijinja = { version = "3", features = ["serde", "speedups"] }
 reqwest = { version = "0.13.5", default-features = false, features = [
   "json",
   "rustls",
@@ -27,14 +28,19 @@ reqwest = { version = "0.13.5", default-features = false, features = [
 ] }
 tower-http = { version = "0.7.1", features = [
   "fs",
-  "cors",
   "normalize-path",
   "compression-gzip",
   "compression-br",
 ] }
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
 
 [profile.release]
 lto = true
 opt-level = 3
 codegen-units = 1
 panic = "abort"
+strip = true

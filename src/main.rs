@@ -1,56 +1,77 @@
-use axum::{extract::Request, http::Method, ServiceExt};
-use std::{env, net::SocketAddr};
-use tokio::net::TcpListener;
-use tower_http::{
-    compression::CompressionLayer, cors::CorsLayer, normalize_path::NormalizePathLayer,
+use axum::{ServiceExt, extract::Request};
+use std::{
+    env,
+    io::{self, IsTerminal},
+    net::Ipv4Addr,
 };
+use tokio::{net::TcpListener, signal};
+use tower_http::{compression::CompressionLayer, normalize_path::NormalizePathLayer};
 use tower_layer::Layer;
+use tracing::info;
+use tracing_subscriber::EnvFilter;
 
-#[macro_use]
-mod macros;
 mod environment;
 mod http;
 mod router;
 mod pages {
-    export!(home);
-    export!(blog);
-    export!(fallback);
+    pub mod blog;
+    pub mod fallback;
+    pub mod home;
 }
 
 #[tokio::main]
 async fn main() {
-    dotenv::dotenv().ok();
+    dotenvy::dotenv().ok();
+
+    tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()))
+        .with_ansi(io::stdout().is_terminal())
+        .init();
+
+    http::load_config();
 
     let port = env::var("PORT")
         .ok()
         .and_then(|p| p.parse().ok())
         .unwrap_or(8000);
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], port));
-    let listener = TcpListener::bind(addr)
+    let listener = TcpListener::bind((Ipv4Addr::UNSPECIFIED, port))
         .await
         .expect("Failed to bind to address");
 
-    println!("Listening on {}", listener.local_addr().unwrap());
-
-    let allowed_origins = ["AP_BASE_URL"]
-        .iter()
-        .filter_map(|&var| env::var(var).ok())
-        .chain(std::iter::once(addr.to_string()))
-        .filter_map(|origin| origin.parse().ok())
-        .collect::<Vec<_>>();
+    info!("Listening on {}", listener.local_addr().unwrap());
 
     let app = ServiceExt::<Request>::into_make_service(
-        NormalizePathLayer::trim_trailing_slash().layer(
-            router::router()
-                .layer(
-                    CorsLayer::new()
-                        .allow_methods([Method::GET])
-                        .allow_origin(allowed_origins),
-                )
-                .layer(CompressionLayer::new()),
-        ),
+        NormalizePathLayer::trim_trailing_slash()
+            .layer(router::router().layer(CompressionLayer::new())),
     );
 
-    axum::serve(listener, app).await.expect("Server error");
+    axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal())
+        .await
+        .expect("Server error");
+}
+
+async fn shutdown_signal() {
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("Failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        signal::unix::signal(signal::unix::SignalKind::terminate())
+            .expect("Failed to install SIGTERM handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        () = ctrl_c => {},
+        () = terminate => {},
+    }
 }

@@ -3,6 +3,8 @@
 {% set name = "AP" %}
 
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Home{% endblock %}</title>
   {% block meta %}
   <meta name="description" content="{{ name }}" />
@@ -10,16 +12,17 @@
   {% endblock %}
   <link href="/index.css" rel="stylesheet" />
   <link href="/favicon.ico" rel="icon" type="image/x-icon" />
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="{{ AP_BASE_URL }}rss.xml" rel="alternate" type="application/rss+xml" title="Aprograma" />
+  {% if google_verification %}
   <meta name="google-site-verification" content="{{ google_verification }}" />
+  {% endif %}
 </head>
 
 <body>
   <header>
     <nav aria-label="Main Navigation">
-      <a href="/" {% if current_path=="/" %}class="activate" {% endif %}>Home</a>
-      <a href="/blog" {% if current_path and current_path | startswith("/blog") %}class="activate" {% endif %}>Blog</a>
+      <a href="/" {% if current_path == "/" %}aria-current="page"{% endif %}>Home</a>
+      <a href="/blog" {% if current_path == "/blog" %}aria-current="page"{% elif current_path is startingwith("/blog/") %}aria-current="true"{% endif %}>Blog</a>
     </nav>
   </header>
 
@@ -28,7 +31,7 @@
   </main>
 
   <footer>
-    <span>&copy; {{ current_year }}, Aprograma</span>
+    <span>&copy; {{ current_year() }}, Aprograma</span>
     <nav aria-label="Footer Navigation">
       <a href="https://linkedin.com/in/danielefalchetti/" target="_blank" rel="noopener noreferrer"
         title="LinkedIn Profile">LinkedIn</a>

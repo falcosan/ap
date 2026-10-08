@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 
-{% set article = page.data.content %}
+{% set article = data.content %}
 {% set title = article.title or "article" %}
-{% set url = AP_BASE_URL ~ page.data.full_slug %}
+{% set url = AP_BASE_URL ~ data.full_slug %}
 {% set description = article.intro or "article" %}
 
 {% if article.file %}
@@ -12,10 +12,6 @@
 {% set image_meta = article.file.filename ~ image_meta_params %}
 {% set img_alt = article.file.alt or ('Image for ' ~ title|lower) %}
 {% endif %}
-
-{% macro meta_tag(attribute, value, type="property") -%}
-<meta {{ type }}="{{ attribute }}" content="{{ value }}">
-{%- endmacro %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -39,10 +35,10 @@
 {% endblock %}
 
 {% block main %}
-<time datetime="{{ article.date|date_format }}"><small>{{ article.date|date_format }}</small></time>
+<time datetime="{{ article.date }}"><small>{{ article.date|date_format }}</small></time>
 <h1>{{ title }}</h1>
 {% if article.file %}
-<img src="{{ image }}" alt="{{ img_alt }}" width="720" height="450" loading="lazy">
+<img src="{{ image }}" alt="{{ img_alt }}" width="720" height="450" fetchpriority="high">
 {% endif %}
 <h2>{{ description }}</h2>
 <article>{{ article.long_text|safe }}</article>

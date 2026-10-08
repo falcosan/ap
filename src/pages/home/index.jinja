@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block main %}
-{% for component in page.data %}
-<section>{{ component.text|safe }}</section>
+{% for section in data %}
+<section>{{ section|safe }}</section>
 {% endfor %}
 {% endblock %}

@@ -1,10 +1,9 @@
 # syntax=docker/dockerfile:1.7
 
-FROM rust:1-slim-bookworm AS builder
+FROM rust:1-slim-trixie AS builder
 WORKDIR /app
 ENV CARGO_TERM_COLOR=always \
-    CARGO_NET_RETRY=10 \
-    RUSTFLAGS="-C strip=symbols"
+    CARGO_NET_RETRY=10
 
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
@@ -15,7 +14,7 @@ RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
     cargo build --release --locked && \
     cp /app/target/release/ap /usr/local/bin/ap
 
-FROM gcr.io/distroless/cc-debian12:nonroot
+FROM gcr.io/distroless/cc-debian13:nonroot
 WORKDIR /app
 COPY --from=builder --chown=nonroot:nonroot /usr/local/bin/ap /app/ap
 COPY --chown=nonroot:nonroot src/static ./src/static

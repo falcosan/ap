@@ -1,76 +1,65 @@
 use crate::http::{
-    article_md_content, blog_md_content, home_md_content, html, llms_content, md, wants_markdown,
-    xml_content,
+    article_md_content, blog_md_content, home_md_content, html, llms_content, md, not_found,
+    wants_markdown, xml_content,
 };
 use crate::pages::{
-    blog::{article, blog},
-    home,
+    blog::{article::article, blog},
+    home::home,
 };
 use axum::{
-    extract::Path,
-    http::{header::CONTENT_TYPE, HeaderMap, StatusCode, Uri},
-    response::Response,
-    routing::get,
     Router,
+    extract::Path,
+    http::{HeaderMap, StatusCode, Uri, header::CONTENT_TYPE},
+    response::{IntoResponse, Response},
+    routing::get,
 };
 
-async fn llms_handler() -> Result<Response<String>, StatusCode> {
-    md(llms_content()
-        .await
-        .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?)
+async fn llms_handler() -> Result<Response, StatusCode> {
+    Ok(md(llms_content().await?))
 }
 
-async fn home_handler(uri: Uri, headers: HeaderMap) -> Result<Response<String>, StatusCode> {
+async fn home_handler(uri: Uri, headers: HeaderMap) -> Result<Response, StatusCode> {
     if wants_markdown(&headers) {
-        return md(home_md_content()
-            .await
-            .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?);
+        return home_md().await;
     }
-    html(home(uri.path()).await)
+    Ok(html(home(uri.path()).await?))
 }
 
-async fn blog_handler(uri: Uri, headers: HeaderMap) -> Result<Response<String>, StatusCode> {
+async fn blog_handler(uri: Uri, headers: HeaderMap) -> Result<Response, StatusCode> {
     if wants_markdown(&headers) {
-        return md(blog_md_content().await);
+        return blog_md().await;
     }
-    html(blog(uri.path()).await)
+    Ok(html(blog(uri.path()).await?))
 }
 
-async fn xml_handler(uri: Uri) -> Result<Response<String>, StatusCode> {
-    let body = xml_content(uri.path())
-        .await
-        .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
-    Response::builder()
-        .header(CONTENT_TYPE, "application/xml")
-        .body(body)
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
+async fn xml_handler(uri: Uri) -> Result<Response, StatusCode> {
+    let body = xml_content(uri.path()).await?;
+    Ok(([(CONTENT_TYPE, "application/xml")], body).into_response())
 }
 
-async fn home_md() -> Result<Response<String>, StatusCode> {
-    md(home_md_content()
-        .await
-        .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?)
+async fn home_md() -> Result<Response, StatusCode> {
+    Ok(md(home_md_content().await?))
 }
 
-async fn blog_md() -> Result<Response<String>, StatusCode> {
-    md(blog_md_content().await)
+async fn blog_md() -> Result<Response, StatusCode> {
+    Ok(md(blog_md_content().await?))
 }
 
 async fn article_handler(
     uri: Uri,
     Path(slug): Path<String>,
     headers: HeaderMap,
-) -> Result<Response<String>, StatusCode> {
-    let (bare, as_md) = match slug.strip_suffix(".md") {
-        Some(s) => (s, true),
-        None => (slug.as_str(), wants_markdown(&headers)),
-    };
+) -> Result<Response, StatusCode> {
+    let (bare, as_md) = slug
+        .strip_suffix(".md")
+        .map_or_else(|| (slug.as_str(), wants_markdown(&headers)), |s| (s, true));
     if as_md {
-        return md(article_md_content(bare)
-            .await
-            .ok_or(StatusCode::NOT_FOUND)?);
+        return Ok(md(article_md_content(bare).await?));
     }
-    html(article(uri.path(), &slug).await)
+    match article(uri.path(), &slug).await {
+        Err(StatusCode::NOT_FOUND) => not_found().await,
+        page => Ok(html(page?)),
+    }
 }
 
 pub fn page_routes() -> Router {

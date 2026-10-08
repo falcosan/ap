@@ -1,11 +1,7 @@
-use crate::environment::{PageContext, ENV};
+use crate::environment::render;
+use crate::http::story;
+use axum::http::StatusCode;
 
-pub async fn article(current_path: &str, slug: &str) -> String {
-    ENV.render_template(
-        "article.html",
-        PageContext {
-            data: get_data!({ slug: format!("blog/{}", slug) }),
-            current_path: current_path.to_string(),
-        },
-    )
+pub async fn article(current_path: &str, slug: &str) -> Result<String, StatusCode> {
+    render("article.html", current_path, story(&["blog", slug]).await?)
 }

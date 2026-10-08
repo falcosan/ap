@@ -9,7 +9,7 @@
 
 {% block main %}
 <ul>
-  {% for article in page.data %}
+  {% for article in data %}
   <li>
     <a href="/{{ article.full_slug }}">{{ article.content.title }}</a>
   </li>

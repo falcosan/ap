@@ -1,5 +1,6 @@
-use crate::environment::ENV;
+use crate::environment::render;
+use axum::http::StatusCode;
 
-pub fn fallback() -> String {
-    ENV.render_template("fallback.html", ())
+pub fn fallback() -> Result<String, StatusCode> {
+    render("fallback.html", "", ())
 }
