@@ -42,9 +42,17 @@ fn article_story(n: usize) -> Value {
             "intro": format!("Intro {n}"),
             "date": "2023-11-14",
             "long_text": format!("<p>Body <strong>{n}</strong></p>"),
-            "file": { "filename": "https://img.example.com/a.png", "alt": "Alt" }
+            "file": cover(n)
         }
     })
+}
+
+fn cover(n: usize) -> Value {
+    match n {
+        8 => json!({ "filename": "https://cdn.test/c.jpg", "is_external_url": true }),
+        9 => json!({ "id": null, "filename": "", "alt": "", "is_external_url": false }),
+        _ => json!({ "filename": "https://img.example.com/a.png", "alt": "Alt" }),
+    }
 }
 
 fn home_story() -> Value {
@@ -384,6 +392,40 @@ async fn article_renders_html() {
     assert!(html.contains(
         r#"<link rel="canonical" href="https:&#x2f;&#x2f;example.com&#x2f;blog&#x2f;article-7">"#
     ));
+}
+
+#[tokio::test]
+async fn article_cover_skips_the_image_service_for_external_urls() {
+    let (upstream, _) = spawn_upstream().await;
+    let app = App::spawn(&upstream).await;
+
+    let asset = app.text("/blog/article-7").await;
+    assert!(asset.contains(
+        r#"<img src="https:&#x2f;&#x2f;img.example.com&#x2f;a.png&#x2f;m&#x2f;fit-in&#x2f;720x450&#x2f;filters:format(webp)" alt="Alt""#
+    ));
+    assert!(asset.contains(
+        r#"<meta name="twitter:image" content="https:&#x2f;&#x2f;img.example.com&#x2f;a.png&#x2f;m&#x2f;fit-in&#x2f;510x240&#x2f;filters:format(webp)">"#
+    ));
+
+    let external = app.text("/blog/article-8").await;
+    assert!(
+        external.contains(
+            r#"<img src="https:&#x2f;&#x2f;cdn.test&#x2f;c.jpg" alt="Image for article 8""#
+        )
+    );
+    assert!(
+        external.contains(
+            r#"<meta property="og:image" content="https:&#x2f;&#x2f;cdn.test&#x2f;c.jpg">"#
+        )
+    );
+    assert!(external.contains(
+        r#"<meta name="twitter:image" content="https:&#x2f;&#x2f;cdn.test&#x2f;c.jpg">"#
+    ));
+
+    let empty = app.text("/blog/article-9").await;
+    assert!(!empty.contains("<img"));
+    assert!(!empty.contains("og:image"));
+    assert!(!empty.contains("twitter:image"));
 }
 
 #[tokio::test]
