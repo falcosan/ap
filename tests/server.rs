@@ -27,12 +27,14 @@ use tokio::{
     time::timeout,
 };
 
-const TOKEN: &str = "test-token-3f9a7c";
+type Requests = Arc<Mutex<Vec<String>>>;
+
 const ARTICLES: usize = 150;
+const EMPTY_COVER: usize = 9;
+const EXTERNAL_COVER: usize = 8;
+const TOKEN: &str = "test-token-3f9a7c";
 const RSS: &str = "<rss><channel><title>Feed</title></channel></rss>";
 const SITEMAP: &str = "<urlset><url><loc>https://example.com/</loc></url></urlset>";
-
-type Requests = Arc<Mutex<Vec<String>>>;
 
 fn article_story(n: usize) -> Value {
     json!({
@@ -49,8 +51,8 @@ fn article_story(n: usize) -> Value {
 
 fn cover(n: usize) -> Value {
     match n {
-        8 => json!({ "filename": "https://cdn.test/c.jpg", "is_external_url": true }),
-        9 => json!({ "id": null, "filename": "", "alt": "", "is_external_url": false }),
+        EXTERNAL_COVER => json!({ "filename": "https://cdn.test/c.jpg", "is_external_url": true }),
+        EMPTY_COVER => json!({ "id": null, "filename": "", "alt": "", "is_external_url": false }),
         _ => json!({ "filename": "https://img.example.com/a.png", "alt": "Alt" }),
     }
 }
@@ -395,7 +397,7 @@ async fn article_renders_html() {
 }
 
 #[tokio::test]
-async fn article_cover_skips_the_image_service_for_external_urls() {
+async fn article_cover_handles_storyblok_external_and_empty_files() {
     let (upstream, _) = spawn_upstream().await;
     let app = App::spawn(&upstream).await;
 
@@ -407,10 +409,10 @@ async fn article_cover_skips_the_image_service_for_external_urls() {
         r#"<meta name="twitter:image" content="https:&#x2f;&#x2f;img.example.com&#x2f;a.png&#x2f;m&#x2f;fit-in&#x2f;510x240&#x2f;filters:format(webp)">"#
     ));
 
-    let external = app.text("/blog/article-8").await;
+    let external = app.text(&format!("/blog/article-{EXTERNAL_COVER}")).await;
     assert!(
         external.contains(
-            r#"<img src="https:&#x2f;&#x2f;cdn.test&#x2f;c.jpg" alt="Image for article 8""#
+            &format!(r#"<img src="https:&#x2f;&#x2f;cdn.test&#x2f;c.jpg" alt="Image for article {EXTERNAL_COVER}""#)
         )
     );
     assert!(
@@ -422,7 +424,7 @@ async fn article_cover_skips_the_image_service_for_external_urls() {
         r#"<meta name="twitter:image" content="https:&#x2f;&#x2f;cdn.test&#x2f;c.jpg">"#
     ));
 
-    let empty = app.text("/blog/article-9").await;
+    let empty = app.text(&format!("/blog/article-{EMPTY_COVER}")).await;
     assert!(!empty.contains("<img"));
     assert!(!empty.contains("og:image"));
     assert!(!empty.contains("twitter:image"));
