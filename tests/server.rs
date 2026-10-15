@@ -27,14 +27,14 @@ use tokio::{
     time::timeout,
 };
 
-type Requests = Arc<Mutex<Vec<String>>>;
-
+const TOKEN: &str = "test-token-3f9a7c";
 const ARTICLES: usize = 150;
 const EMPTY_COVER: usize = 9;
 const EXTERNAL_COVER: usize = 8;
-const TOKEN: &str = "test-token-3f9a7c";
 const RSS: &str = "<rss><channel><title>Feed</title></channel></rss>";
 const SITEMAP: &str = "<urlset><url><loc>https://example.com/</loc></url></urlset>";
+
+type Requests = Arc<Mutex<Vec<String>>>;
 
 fn article_story(n: usize) -> Value {
     json!({
@@ -404,6 +404,9 @@ async fn article_cover_handles_storyblok_external_and_empty_files() {
     let asset = app.text("/blog/article-7").await;
     assert!(asset.contains(
         r#"<img src="https:&#x2f;&#x2f;img.example.com&#x2f;a.png&#x2f;m&#x2f;fit-in&#x2f;720x450&#x2f;filters:format(webp)" alt="Alt""#
+    ));
+    assert!(asset.contains(
+        r#"<meta property="og:image" content="https:&#x2f;&#x2f;img.example.com&#x2f;a.png&#x2f;m&#x2f;fit-in&#x2f;510x240&#x2f;filters:format(webp)">"#
     ));
     assert!(asset.contains(
         r#"<meta name="twitter:image" content="https:&#x2f;&#x2f;img.example.com&#x2f;a.png&#x2f;m&#x2f;fit-in&#x2f;510x240&#x2f;filters:format(webp)">"#
