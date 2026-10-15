@@ -307,6 +307,7 @@ async fn home_renders_markdown_sections() {
     assert!(body.contains(r#"<a href="/" aria-current="page">Home</a>"#));
     assert!(body.contains(&format!("&copy; {}, Aprograma", chrono::Utc::now().year())));
     assert!(body.contains(r#"rel="alternate" type="application/rss+xml""#));
+    assert!(body.contains(r#"<meta name="color-scheme" content="light dark" />"#));
     assert!(!body.contains("google-site-verification"));
     assert!(body.trim_start().starts_with("<!DOCTYPE html>"));
     assert!(body.find(r#"<meta charset="UTF-8" />"#).unwrap() < body.find("<title>").unwrap());
@@ -386,7 +387,7 @@ async fn article_renders_html() {
     let html = app.text("/blog/article-7").await;
     assert!(html.contains("<title>Article 7</title>"));
     assert!(html.contains("<h1>Article 7</h1>"));
-    assert!(html.contains(r#"<time datetime="2023-11-14"><small>14 Nov 2023</small></time>"#));
+    assert!(html.contains(r#"<time datetime="2023-11-14">14 Nov 2023</time>"#));
     assert!(html.contains(r#"fetchpriority="high""#));
     assert!(!html.contains(r#"loading="lazy""#));
     assert!(html.contains("<p>Body <strong>7</strong></p>"));
@@ -460,7 +461,7 @@ async fn missing_pages_return_not_found() {
                 .text()
                 .await
                 .unwrap()
-                .contains("404: Page not found")
+                .contains("<h1>404: Page not found</h1>")
         );
     }
     assert_eq!(

@@ -1,45 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 {% set name = "AP" %}
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}Home{% endblock %}</title>
-  {% block meta %}
-  <meta name="description" content="{{ name }}" />
-  <link rel="canonical" href="{{ AP_BASE_URL }}" />
-  {% endblock %}
-  <link href="/index.css" rel="stylesheet" />
-  <link href="/favicon.ico" rel="icon" type="image/x-icon" />
-  <link href="{{ AP_BASE_URL }}rss.xml" rel="alternate" type="application/rss+xml" title="Aprograma" />
-  {% if google_verification %}
-  <meta name="google-site-verification" content="{{ google_verification }}" />
-  {% endif %}
-</head>
-
-<body>
-  <header>
-    <nav aria-label="Main Navigation">
-      <a href="/" {% if current_path == "/" %}aria-current="page"{% endif %}>Home</a>
-      <a href="/blog" {% if current_path == "/blog" %}aria-current="page"{% elif current_path is startingwith("/blog/") %}aria-current="true"{% endif %}>Blog</a>
-    </nav>
-  </header>
-
-  <main>
-    {% block main %}{% endblock %}
-  </main>
-
-  <footer>
-    <span>&copy; {{ current_year() }}, Aprograma</span>
-    <nav aria-label="Footer Navigation">
-      <a href="https://linkedin.com/in/danielefalchetti/" target="_blank" rel="noopener noreferrer"
-        title="LinkedIn Profile">LinkedIn</a>
-      <a href="https://github.com/falcosan" target="_blank" rel="noopener noreferrer" title="GitHub Profile">GitHub</a>
-      <a href="{{ AP_BASE_URL }}rss.xml" target="_blank" rel="noopener noreferrer" title="RSS">RSS</a>
-    </nav>
-  </footer>
-
-</body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>{% block title %}Home{% endblock %}</title>
+    {% block meta %}
+    <meta name="description" content="{{ name }}" />
+    <link rel="canonical" href="{{ AP_BASE_URL }}" />
+    {% endblock %}
+    <link href="/index.css" rel="stylesheet" />
+    <link href="/favicon.ico" rel="icon" type="image/x-icon" />
+    <link href="{{ AP_BASE_URL }}rss.xml" rel="alternate" type="application/rss+xml" title="Aprograma" />
+    {% if google_verification %}
+    <meta name="google-site-verification" content="{{ google_verification }}" />
+    {% endif %}
+  </head>
+  <body>
+    <header>
+      <nav aria-label="Main Navigation">
+        <a href="/" {% if current_path == "/" %}aria-current="page"{% endif %}>Home</a>
+        <a href="/blog" {% if current_path == "/blog" %}aria-current="page"{% elif current_path is startingwith("/blog/") %}aria-current="true"{% endif %}>Blog</a>
+      </nav>
+    </header>
+    <main>
+      {% block main %}{% endblock %}
+    </main>
+    <footer>
+      <span>&copy; {{ current_year() }}, Aprograma</span>
+      <nav aria-label="Footer Navigation">
+        <a href="https://linkedin.com/in/danielefalchetti/" target="_blank" rel="noopener noreferrer"
+          title="LinkedIn Profile">LinkedIn</a>
+        <a href="https://github.com/falcosan" target="_blank" rel="noopener noreferrer" title="GitHub Profile">GitHub</a>
+        <a href="{{ AP_BASE_URL }}rss.xml" target="_blank" rel="noopener noreferrer" title="RSS">RSS</a>
+      </nav>
+    </footer>
+  </body>
 </html>

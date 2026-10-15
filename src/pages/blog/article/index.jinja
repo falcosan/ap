@@ -35,7 +35,7 @@
 {% endblock %}
 
 {% block main %}
-<time datetime="{{ article.date }}"><small>{{ article.date|date_format }}</small></time>
+<time datetime="{{ article.date }}">{{ article.date|date_format }}</time>
 <h1>{{ title }}</h1>
 {% if image %}
 <img src="{{ image }}" alt="{{ img_alt }}" width="720" height="450" fetchpriority="high">
