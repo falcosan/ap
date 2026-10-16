@@ -4,6 +4,7 @@
 {% set title = article.title or "article" %}
 {% set url = AP_BASE_URL ~ data.full_slug %}
 {% set description = article.intro or "article" %}
+{% set categories = (article.categories or [])|map("split", ";")|map("first")|map("trim")|select|list %}
 
 {% if article.file and article.file.filename %}
 {% set image_params = '' if article.file.is_external_url else '/m/fit-in/720x450/filters:format(webp)' %}
@@ -12,6 +13,10 @@
 {% set image_meta = article.file.filename ~ image_meta_params %}
 {% set img_alt = article.file.alt or ('Image for ' ~ title|lower) %}
 {% endif %}
+
+{% set schema = {"@context": "https://schema.org", "@type": "BlogPosting", "headline": title, "datePublished": article.date[:10], "keywords": categories} %}
+{% if image %}{% set schema = dict(schema, image=image) %}{% endif %}
+{% if article.author %}{% set schema = dict(schema, author={"@type": "Person", "name": article.author}) %}{% endif %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -32,6 +37,7 @@
 {% if image %}
 <meta name="twitter:image" content="{{ image_meta }}">
 {% endif %}
+<script type="application/ld+json">{{ schema|tojson }}</script>
 {% endblock %}
 
 {% block main %}

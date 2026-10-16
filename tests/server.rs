@@ -31,6 +31,7 @@ const TOKEN: &str = "test-token-3f9a7c";
 const ARTICLES: usize = 150;
 const EMPTY_COVER: usize = 9;
 const EXTERNAL_COVER: usize = 8;
+const BARE: usize = 10;
 const RSS: &str = "<rss><channel><title>Feed</title></channel></rss>";
 const SITEMAP: &str = "<urlset><url><loc>https://example.com/</loc></url></urlset>";
 
@@ -44,7 +45,9 @@ fn article_story(n: usize) -> Value {
             "intro": format!("Intro {n}"),
             "date": "2023-11-14",
             "long_text": format!("<p>Body <strong>{n}</strong></p>"),
-            "file": cover(n)
+            "file": cover(n),
+            "categories": categories(n),
+            "author": author(n)
         }
     })
 }
@@ -54,6 +57,20 @@ fn cover(n: usize) -> Value {
         EXTERNAL_COVER => json!({ "filename": "https://cdn.test/c.jpg", "is_external_url": true }),
         EMPTY_COVER => json!({ "id": null, "filename": "", "alt": "", "is_external_url": false }),
         _ => json!({ "filename": "https://img.example.com/a.png", "alt": "Alt" }),
+    }
+}
+
+fn categories(n: usize) -> Value {
+    match n {
+        BARE => json!([]),
+        _ => json!(["career; carrera; carriera", " IT ; TI; IT", "R&D; I+D; R&S"]),
+    }
+}
+
+const fn author(n: usize) -> &'static str {
+    match n {
+        BARE => "",
+        _ => "Ada Lovelace",
     }
 }
 
@@ -395,6 +412,39 @@ async fn article_renders_html() {
     assert!(html.contains(
         r#"<link rel="canonical" href="https:&#x2f;&#x2f;example.com&#x2f;blog&#x2f;article-7">"#
     ));
+}
+
+fn structured_data(html: &str) -> Value {
+    let (_, script) = html
+        .split_once(r#"<script type="application/ld+json">"#)
+        .unwrap();
+    serde_json::from_str(script.split_once("</script>").unwrap().0).unwrap()
+}
+
+#[tokio::test]
+async fn article_describes_itself_with_structured_data() {
+    let (upstream, _) = spawn_upstream().await;
+    let app = App::spawn(&upstream).await;
+
+    assert_eq!(
+        structured_data(&app.text("/blog/article-7").await),
+        json!({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": "Article 7",
+            "datePublished": "2023-11-14",
+            "image": "https://img.example.com/a.png/m/fit-in/720x450/filters:format(webp)",
+            "author": { "@type": "Person", "name": "Ada Lovelace" },
+            "keywords": ["career", "IT", "R&D"]
+        })
+    );
+
+    let coverless = structured_data(&app.text(&format!("/blog/article-{EMPTY_COVER}")).await);
+    assert!(coverless.get("image").is_none());
+
+    let bare = structured_data(&app.text(&format!("/blog/article-{BARE}")).await);
+    assert!(bare.get("author").is_none());
+    assert_eq!(bare["keywords"], json!([]));
 }
 
 #[tokio::test]

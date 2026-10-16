@@ -17,22 +17,22 @@ dotenvy = "0.15.7"
 tracing = "0.1.44"
 tower-layer = "0.3"
 tokio = { version = "1", features = ["full"] }
-pulldown-cmark = { version = "0.13", features = ["simd"] }
-minijinja = { version = "3", features = ["serde", "speedups"] }
-reqwest = { version = "0.13.5", default-features = false, features = [
-  "json",
-  "rustls",
-  "http2",
-  "gzip",
-  "brotli",
-] }
 tower-http = { version = "0.7.1", features = [
   "fs",
   "normalize-path",
   "compression-gzip",
   "compression-br",
 ] }
+pulldown-cmark = { version = "0.13", features = ["simd"] }
+reqwest = { version = "0.13.5", default-features = false, features = [
+  "json",
+  "gzip",
+  "http2",
+  "rustls",
+  "brotli",
+] }
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+minijinja = { version = "3", features = ["serde", "speedups", "json"] }
 
 [lints.clippy]
 pedantic = { level = "warn", priority = -1 }
